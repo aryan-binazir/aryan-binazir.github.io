@@ -3280,6 +3280,7 @@ input, select, textarea {
 					line-height: 8em;
 					width: 8em;
 				}
+				
 
 		/* Main */
 
@@ -3625,4 +3626,71 @@ input, select, textarea {
 		}
 	}
 
+	@media screen and (max-width: 1400px) {
+
+		#name-nav {
+			display: block;
+			width: 100%;
+			font-size: 1.3rem;
+			margin-bottom: 1rem;
+		}
 	
+		#profile {
+			width: 40%;
+			float: none;
+			justify-content: center;
+		}
+		#bio {
+			display: inline-block;
+			width: 90%;
+			float: none;
+			justify-content: center;
+		}
+
+	}
+
+	@media screen and (max-width: 1000px) {
+
+		#name-nav {
+			display: block;
+			width: 100%;
+			font-size: 1.3rem;
+			margin-bottom: 1rem;
+		}
+	
+		#profile {
+			width: 60%;
+			float: none;
+			justify-content: center;
+		}
+		#bio {
+			display: inline-block;
+			width: 90%;
+			float: none;
+			justify-content: center;
+		}
+
+	}
+
+	@media screen and (max-width: 500px) {
+
+		#name-nav {
+			display: block;
+			width: 100%;
+			font-size: 1.3rem;
+			margin-bottom: 1rem;
+		}
+	
+		#profile {
+			width: 90%;
+			float: none;
+			justify-content: center;
+		}
+		#bio {
+			display: inline-block;
+			width: 90%;
+			float: none;
+			justify-content: center;
+		}
+
+	}
