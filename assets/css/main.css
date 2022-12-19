@@ -3626,15 +3626,16 @@ input, select, textarea {
 		}
 	}
 
-	@media screen and (max-width: 1400px) {
+	@media screen and (max-width: 1175px) {
 
 		#name-nav {
 			display: block;
 			width: 100%;
 			font-size: 1.3rem;
-			margin-bottom: 1rem;
+			/* margin-bottom: 1rem; */
+			justify-content: center;
 		}
-	
+
 		#profile {
 			width: 30%;
 			float: none;
