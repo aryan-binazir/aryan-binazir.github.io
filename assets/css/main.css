@@ -3544,7 +3544,7 @@ input, select, textarea {
 	#profile {
 		width: 29%;
 		float: left;
-		margin-left: 1%;
+		margin: 6% 0 0 1%;
 		border-radius: 20%;
 	}
 
@@ -3626,15 +3626,16 @@ input, select, textarea {
 		}
 	}
 
-	@media screen and (max-width: 1400px) {
+	@media screen and (max-width: 1280px) {
 
 		#name-nav {
 			display: block;
-			width: 100%;
+			width: 90%;
 			font-size: 1.3rem;
-			margin-bottom: 1rem;
+			/* margin-bottom: 1rem; */
+			margin: 0 4% 0 0;
 		}
-	
+
 		#profile {
 			width: 30%;
 			float: none;
@@ -3642,35 +3643,13 @@ input, select, textarea {
 		}
 		#bio {
 			display: inline-block;
-			width: 90%;
+			width: 80%;
 			float: none;
 			justify-content: center;
 		}
-
 	}
 
-	@media screen and (max-width: 1000px) {
 
-		#name-nav {
-			display: block;
-			width: 100%;
-			font-size: 1.3rem;
-			margin-bottom: 1rem;
-		}
-	
-		#profile {
-			width: 40%;
-			float: none;
-			justify-content: center;
-		}
-		#bio {
-			display: inline-block;
-			width: 90%;
-			float: none;
-			justify-content: center;
-		}
-
-	}
 
 	@media screen and (max-width: 900px) {
 		#profile {
@@ -3684,9 +3663,9 @@ input, select, textarea {
 
 		#name-nav {
 			display: block;
-			width: 100%;
+			width: 70%;
 			font-size: 1.3rem;
-			margin-bottom: 1rem;
+			margin: 0 14% 0 0;
 		}
 	
 		#profile {
@@ -3694,11 +3673,11 @@ input, select, textarea {
 			float: none;
 			justify-content: center;
 		}
+
 		#bio {
 			display: inline-block;
 			width: 90%;
 			float: none;
 			justify-content: center;
 		}
-
 	}
