@@ -3560,7 +3560,7 @@ input, select, textarea {
 		width: 68%;
 		float: right;
 		font-size: 2rem;
-		margin: 0 1%;
+		margin: 0% 2% 0% 0%;
 	}
 
 	@media screen and (max-width: 1000px) {
