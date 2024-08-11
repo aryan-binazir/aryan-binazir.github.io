@@ -3628,6 +3628,7 @@ input, select, textarea {
 
 	@media screen and (max-width: 1350px) {
 
+		// Apply changes here to fix 100% zoom
 		#name-nav {
 			display: block;
 			width: 90%;
