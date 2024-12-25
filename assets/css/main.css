@@ -2915,11 +2915,11 @@ input, select, textarea {
 /* Header */
 
 	#header {
-		padding: 6em 0 11em 0 ;
+		padding: 6em 0 11em 0;
 		background-color: #121212;
 		background-attachment: fixed, fixed, fixed;
 		background-image: url("images/overlay2.png"), url("images/overlay3.svg"), 
-						  linear-gradient(45deg, #3498db 5%, #2c3e50 50%, #1a252f 95%);
+						  linear-gradient(45deg, #1a252f 5%, #2c3e50 50%, #3498db 95%);
 		background-position: top left, center center, center center;
 		background-size: auto, cover, cover;
 		overflow: hidden;
@@ -3083,10 +3083,6 @@ input, select, textarea {
 			}
 
 		#header:after {
-			-moz-transition: opacity 1s ease;
-			-webkit-transition: opacity 1s ease;
-			-ms-transition: opacity 1s ease;
-			transition: opacity 1s ease;
 			background-image: linear-gradient(45deg, #1a252f, #2c3e50);
 			content: '';
 			height: 100%;
@@ -3120,7 +3116,7 @@ input, select, textarea {
 /* Footer */
 
 	#footer {
-		padding: 6em 0 6em 0 ;
+		padding: 6em 0 6em 0;
 		background-color: #121212;
 		color: rgba(255, 255, 255, 0.75);
 		background-attachment: fixed, fixed, fixed;
@@ -3249,7 +3245,7 @@ input, select, textarea {
 		/* Header */
 
 			#header {
-				padding: 6em 0 6em 0 ;
+				padding: 6em 0 6em 0;
 			}
 
 	}
@@ -3284,7 +3280,7 @@ input, select, textarea {
 		/* Main */
 
 			.main {
-				padding: 4em 0 2em 0 ;
+				padding: 4em 0 2em 0;
 			}
 
 				.main.style2 {
@@ -3294,7 +3290,7 @@ input, select, textarea {
 		/* Header */
 
 			#header {
-				padding: 5em 0 5em 0 ;
+				padding: 5em 0 5em 0;
 				background-attachment: scroll;
 			}
 
@@ -3305,7 +3301,7 @@ input, select, textarea {
 		/* Footer */
 
 			#footer {
-				padding: 4em 0 4em 0 ;
+				padding: 4em 0 4em 0;
 				background-attachment: scroll;
 			}
 
@@ -3342,19 +3338,19 @@ input, select, textarea {
 		/* Main */
 
 			.main {
-				padding: 5em 3em 3em 3em ;
+				padding: 5em 3em 3em 3em;
 			}
 
 		/* Header */
 
 			#header {
-				padding: 8em 3em 8em 3em ;
+				padding: 8em 3em 8em 3em;
 			}
 
 		/* Footer */
 
 			#footer {
-				padding: 5em 3em 5em 3em ;
+				padding: 5em 3em 5em 3em;
 			}
 
 		/* One */
@@ -3433,13 +3429,13 @@ input, select, textarea {
 		/* Main */
 
 			.main {
-				padding: 3em 1.5em 1em 1.5em ;
+				padding: 3em 1.5em 1em 1.5em;
 			}
 
 		/* Header */
 
 			#header {
-				padding: 4em 3em 4em 3em ;
+				padding: 4em 3em 4em 3em;
 			}
 
 				#header .actions {
@@ -3449,7 +3445,7 @@ input, select, textarea {
 		/* Footer */
 
 			#footer {
-				padding: 3em 1.5em 3em 1.5em ;
+				padding: 3em 1.5em 3em 1.5em;
 			}
 
 	}
@@ -3470,13 +3466,13 @@ input, select, textarea {
 		/* Main */
 
 			.main {
-				padding: 2em 1.5em 0.1em 1.5em ;
+				padding: 2em 1.5em 0.1em 1.5em;
 			}
 
 		/* Header */
 
 			#header {
-				padding: 4em 2em 4em 2em ;
+				padding: 4em 2em 4em 2em;
 			}
 
 				#header br {
@@ -3486,7 +3482,7 @@ input, select, textarea {
 		/* Footer */
 
 			#footer {
-				padding: 2em 1.5em 2em 1.5em ;
+				padding: 2em 1.5em 2em 1.5em;
 			}
 
 				#footer .copyright {
@@ -3519,19 +3515,19 @@ input, select, textarea {
 		/* Main */
 
 			.main {
-				padding: 2em 1em 0.1em 1em ;
+				padding: 2em 1em 0.1em 1em;
 			}
 
 		/* Header */
 
 			#header {
-				padding: 3em 1em 3em 1em ;
+				padding: 3em 1em 3em 1em;
 			}
 
 		/* Footer */
 
 			#footer {
-				padding: 2em 1em 2em 1em ;
+				padding: 2em 1em 2em 1em;
 			}
 
 	}
@@ -3573,7 +3569,7 @@ input, select, textarea {
 		}
 
 		#header {
-			padding: 3em 0 3em 0 ;
+			padding: 3em 0 3em 0;
 		}
 
 	}
