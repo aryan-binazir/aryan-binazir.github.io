@@ -2915,7 +2915,7 @@ input, select, textarea {
 /* Header */
 
 	#header {
-		padding: 6em 0 11em 0;
+		padding: 3em 0 4em 0;
 		background-color: #121212;
 		background-attachment: fixed, fixed, fixed;
 		background-image: url("images/overlay2.png"), url("images/overlay3.svg"), 
@@ -3041,7 +3041,7 @@ input, select, textarea {
 			#header .actions:after {
 				background: #ffffff;
 				content: '';
-				height: 100vh;
+				height: 50vh;
 				left: 50%;
 				position: absolute;
 				top: 100%;
@@ -3537,144 +3537,87 @@ input, select, textarea {
 	}
 
 	#profile {
-		width: 29%;
-		float: left;
-		margin: 6% 0 0 1%;
+		width: 25%;
+		width: min(25%, 300px);
+		display: block;
+		margin: 0 auto 1.5rem auto;
 		border-radius: 20%;
 	}
 
 	#bio {
-		font-size: 1.7rem;
+		font-size: 1.9rem;
+		font-size: clamp(1.4rem, 2.2vw, 1.9rem);
 		text-align: left;
-		width: 66%;
-		float: right;
-		margin: 0 2%;
+		width: 60%;
+		margin: 0 auto;
+		display: block;
+		padding-left: 0;
+		font-family: "Source Sans Pro", Helvetica, sans-serif;
+		font-weight: 300;
 	}
 
 	#name-nav {
-		width: 68%;
-		float: right;
-		font-size: 2rem;
-		margin: 0% 2% 0% 0%;
+		width: 100%;
+		text-align: center;
+		margin: 0 auto 1.5rem auto;
+		padding: 0 2%;
 	}
 
-	@media screen and (max-width: 1000px) {
-
-		#name-nav {
-			font-size: 1.2rem;
-		}
-
-		#bio {
-			font-size: 1.5rem;
-		}
-
-		#header {
-			padding: 3em 0 3em 0;
-		}
-
-	}
-
-	@media screen and (max-width: 850px) {
-
-		#name-nav {
-			font-size: 1rem;
-			/* display: block; */
-			/* width: 100% */
-		}
-
-		#profile {
-
-		}
-		#bio {
-			font-size: 1.2rem;
-		}
-
-	}
-
-	@media screen and (max-width: 700px) {
-
-		#name-nav {
-			display: block;
-			width: 100%;
-			font-size: 1.2rem;
-			margin-bottom: 1rem;
-		}
-
-		#profile {
-			width: 40%;
-			float: none;
-			justify-content: center;
-		}
-		#bio {
-			display: inline-block;
-			width: 70%;
-			float: none;
-			justify-content: center;
-		}
-
-	}
-
-	@media screen and (max-width: 500px) {
-
-		#profile {
-			width: 60%;
-		}
+	#name-nav h1 {
+		margin-bottom: 0.3em;
 	}
 
 	@media screen and (max-width: 1250px) {
+		#header {
+			padding: 3em 0 3.5em 0;
+		}
 
-		// Apply changes here to fix 100% zoom
 		#name-nav {
-			display: block;
-			width: 90%;
-			font-size: 1.3rem;
-			/* margin-bottom: 1rem; */
-			margin: 0 4% 0 0;
+			text-align: center;
+			width: 100%;
+			margin: 0 auto 1.5rem auto;
+			padding: 0;
 		}
 
 		#profile {
 			width: 30%;
-			float: none;
-			justify-content: center;
+			width: min(30%, 280px);
+			margin: 0 auto 1.5rem auto;
 		}
+
 		#bio {
-			display: inline-block;
-			width: 80%;
-			float: none;
-			justify-content: center;
+			width: 70%;
+			margin: 0 auto;
+			padding-left: 0;
 		}
 	}
 
-
-
 	@media screen and (max-width: 900px) {
+		#header {
+			padding: 2.5em 0 3em 0;
+		}
+
 		#profile {
-			width: 60%;
-			float: none;
-			justify-content: center;
+			width: 40%;
+			width: min(40%, 250px);
+		}
+
+		#bio {
+			width: 80%;
+		}
+	}
+
+	@media screen and (max-width: 700px) {
+		#bio {
+			width: 85%;
+			font-size: 1.4rem;
+			font-size: clamp(1.2rem, 1.7vw, 1.4rem);
 		}
 	}
 
 	@media screen and (max-width: 500px) {
-
-		#name-nav {
-			display: block;
-			width: 70%;
-			font-size: 1.3rem;
-			margin: 0 14% 0 0;
-		}
-	
-		#profile {
-			width: 90%;
-			float: none;
-			justify-content: center;
-		}
-
 		#bio {
-			display: inline-block;
 			width: 90%;
-			float: none;
-			justify-content: center;
 		}
 	}
 
