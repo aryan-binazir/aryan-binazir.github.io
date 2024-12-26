@@ -3347,6 +3347,10 @@ input, select, textarea {
 				padding: 8em 3em 8em 3em;
 			}
 
+			#bio {
+				text-align: center;
+			}
+
 		/* Footer */
 
 			#footer {
@@ -3362,6 +3366,12 @@ input, select, textarea {
 		/* Two */
 
 			#two {
+				text-align: center;
+			}
+
+		/* Bio */
+
+			#bio {
 				text-align: center;
 			}
 
@@ -3547,7 +3557,7 @@ input, select, textarea {
 	#bio {
 		font-size: 1.9rem;
 		font-size: clamp(1.4rem, 2.2vw, 1.9rem);
-		text-align: left;
+		text-align: left !important;
 		width: 60%;
 		margin: 0 auto;
 		display: block;
@@ -3589,6 +3599,12 @@ input, select, textarea {
 			width: 70%;
 			margin: 0 auto;
 			padding-left: 0;
+		}
+	}
+
+	@media screen and (max-width: 980px) {
+		#bio {
+			text-align: center !important;
 		}
 	}
 
