@@ -1,4 +1,11 @@
 /* Profile Layout Styles */
+#header {
+  padding-top: 2rem !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
 #header .inner {
   display: flex;
   flex-direction: row;
@@ -7,18 +14,52 @@
   justify-content: center;
   max-width: 1200px;
   margin: 0 auto;
+  padding-top: 3rem;
 }
 
 #name-nav {
   width: 100%;
   text-align: center;
-  margin: 0 auto 1.5rem auto;
-  padding: 0 2%;
+  margin: 0 auto 4rem auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#name-nav h1 {
+  font-size: 3.5rem;
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  padding-top: 0;
+}
+
+/* Control icon spacing */
+#nav ul.icons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+#nav ul.icons li {
+  margin: 0 0.4rem;
+}
+
+@media (min-width: 768px) {
+  #nav ul.icons {
+    max-width: 300px;
+  }
 }
 
 #profile {
-  width: 25%;
-  width: min(25%, 280px);
+  width: 30%;
+  width: min(30%, 320px);
   display: block;
   margin: 0 3rem 1.5rem 0;
   border-radius: 20%;
@@ -57,13 +98,13 @@
 
 @media screen and (max-width: 1250px) {
   #profile {
-    width: 30%;
-    width: min(30%, 260px);
+    width: 35%;
+    width: min(35%, 300px);
     margin-right: 2.5rem;
   }
   
   #bio {
-    max-width: 60%;
+    max-width: 55%;
   }
 }
 
@@ -77,11 +118,13 @@
   
   #profile {
     margin: 0 auto 1.5rem auto;
+    width: 40%;
+    width: min(40%, 250px);
   }
   
   #bio {
     text-align: center !important;
-    width: 80%;
+    width: 90%;
     max-width: 100%;
     margin: 0 auto;
     padding: 0;
