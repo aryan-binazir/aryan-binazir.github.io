@@ -2396,6 +2396,12 @@ input, select, textarea {
 
 			.image.fit img {
 				width: 100%;
+				border-radius: 8px;
+				transition: transform 0.3s ease;
+			}
+			
+			.image.fit img:hover {
+				transform: scale(1.03);
 			}
 
 /* List */
@@ -2830,6 +2836,7 @@ input, select, textarea {
 
 		.main.style2 {
 			background-color: #2f4154;  /* Just slightly darker than Triage section */
+			padding: 4em 0;
 		}
 
 			.main.style2 a {
@@ -3639,18 +3646,27 @@ input, select, textarea {
 
 /* Project sections */
 .col-4.col-12-medium {
-    background-color: rgba(255, 255, 255, 0.08);  /* Slightly more visible */
-    border-radius: 8px;
     padding: 20px;
     margin: 10px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Project title styling */
+.col-4.col-12-medium h3 {
+    margin: 1em 0 0.5em;
+    color: white;
+    font-weight: 500;
+    font-size: 1.4em;
+}
+
+/* Project text styling */
+.col-4.col-12-medium p {
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
 }
 
 .col-4.col-12-medium:hover {
-    background-color: rgba(255, 255, 255, 0.08);  /* Slightly lighter on hover */
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Project sections - adjust grid layout */
@@ -3667,16 +3683,11 @@ input, select, textarea {
     width: 33.33333%;  /* Ensure exact third width */
     margin: 0;  /* Remove margin that might be causing overflow */
     padding: 1em;  /* Add some internal padding instead */
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .col-4.col-12-medium:hover {
-    background-color: rgba(255, 255, 255, 0.12);  /* Slightly lighter on hover */
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Adjust container width for better fit */
