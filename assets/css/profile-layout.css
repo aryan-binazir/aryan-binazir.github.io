@@ -122,6 +122,8 @@
     margin: 0 auto 1.5rem auto;
     width: 40%;
     width: min(40%, 250px);
+    min-height: auto;
+    object-fit: contain;
   }
   
   #bio {
