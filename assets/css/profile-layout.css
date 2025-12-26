@@ -60,13 +60,18 @@
 #profile {
   width: 30%;
   width: min(30%, 320px);
-  min-height: 350px;
-  object-fit: cover;
   display: block;
   margin: 0 3rem 1.5rem 0;
   border-radius: 20%;
   flex-shrink: 0;
   align-self: center;
+}
+
+@media screen and (min-width: 769px) {
+  #profile {
+    min-height: 350px;
+    object-fit: cover;
+  }
 }
 
 #bio {
@@ -122,8 +127,6 @@
     margin: 0 auto 1.5rem auto;
     width: 40%;
     width: min(40%, 250px);
-    min-height: auto;
-    object-fit: contain;
   }
   
   #bio {
