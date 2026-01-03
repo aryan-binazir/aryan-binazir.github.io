@@ -1,14 +1,15 @@
 :root {
-  --bg: #efe7dc;
-  --bg-alt: #e3e8e4;
-  --ink: #151b22;
-  --muted: #4c5a64;
-  --accent: #c35f3c;
-  --accent-2: #256c73;
-  --card: #ffffff;
-  --border: #d5cabd;
-  --shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
-  --shadow-soft: 0 10px 30px rgba(16, 24, 40, 0.08);
+  --bg: #0b0f14;
+  --bg-alt: #111823;
+  --ink: #e8edf2;
+  --muted: #a1a9b5;
+  --accent: #d28c62;
+  --accent-2: #6fb8c9;
+  --card: #141d28;
+  --border: #2a3443;
+  --panel: #101720;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.35);
   --scroll-offset: 84px;
 }
 
@@ -28,7 +29,7 @@ body {
   min-height: 100vh;
   font-family: "Sora", sans-serif;
   color: var(--ink);
-  background: linear-gradient(140deg, var(--bg) 0%, #e7ece9 45%, var(--bg-alt) 100%);
+  background: linear-gradient(140deg, var(--bg) 0%, #0f151d 45%, var(--bg-alt) 100%);
   line-height: 1.65;
   position: relative;
 }
@@ -45,7 +46,7 @@ body::after {
 body::before {
   background: radial-gradient(
     600px circle at 12% 0%,
-    rgba(212, 108, 72, 0.18),
+    rgba(210, 140, 98, 0.14),
     transparent 60%
   );
 }
@@ -53,7 +54,7 @@ body::before {
 body::after {
   background: radial-gradient(
     700px circle at 85% 8%,
-    rgba(45, 127, 136, 0.18),
+    rgba(111, 184, 201, 0.12),
     transparent 55%
   );
 }
@@ -85,7 +86,7 @@ ul {
 .page {
   position: relative;
   z-index: 1;
-  background-image: radial-gradient(rgba(19, 29, 38, 0.03) 0.6px, transparent 0.6px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.025) 0.6px, transparent 0.6px);
   background-size: 18px 18px;
 }
 
@@ -98,7 +99,7 @@ ul {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(239, 231, 220, 0.88);
+  background: rgba(11, 15, 20, 0.9);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
 }
@@ -129,7 +130,7 @@ ul {
   height: 42px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(20, 29, 40, 0.92);
   box-shadow: var(--shadow-soft);
   font-size: 1.05rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -138,7 +139,7 @@ ul {
 .icon-nav .icon:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow);
-  border-color: rgba(212, 108, 72, 0.4);
+  border-color: rgba(111, 184, 201, 0.6);
 }
 
 .icon-nav .label {
@@ -205,18 +206,19 @@ ul {
   justify-content: center;
   padding: 0.85rem 1.6rem;
   border-radius: 999px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--accent-2);
+  color: var(--bg);
   font-weight: 600;
-  border: 1px solid var(--ink);
+  border: 1px solid rgba(111, 184, 201, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
-  background: #11161c;
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
+  border-color: rgba(210, 140, 98, 0.6);
 }
 
 .btn.secondary {
@@ -226,7 +228,7 @@ ul {
 }
 
 .btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .portrait {
@@ -238,17 +240,17 @@ ul {
 .portrait img {
   border-radius: 26px;
   box-shadow: var(--shadow);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
 }
 
 .portrait::after {
   content: "";
   position: absolute;
   inset: 12px -12px -12px 12px;
-  border: 1px solid rgba(28, 35, 43, 0.12);
+  border: 1px solid var(--border);
   border-radius: 28px;
   z-index: -1;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(20, 29, 40, 0.7);
 }
 
 .section-head h2 {
@@ -286,7 +288,7 @@ ul {
 }
 
 .feature-media {
-  background: #f8f4ef;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 22px;
   padding: 2rem;
@@ -327,7 +329,7 @@ ul {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  background: #f3ede5;
+  background: var(--panel);
   border-bottom: 1px solid var(--border);
 }
 
@@ -351,19 +353,22 @@ ul {
 
 .accent {
   color: var(--accent-2);
+}
+
+a.accent {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
 }
 
-.accent:hover {
+a.accent:hover {
   color: var(--accent);
 }
 
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 2.8rem 0 3.5rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(11, 15, 20, 0.65);
 }
 
 .footer-inner {
