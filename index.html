@@ -1,110 +1,256 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<title>Aryan Binazir</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
-		<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-		<link rel="apple-touch-icon" href="images/favicon.png">
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="assets/css/profile-layout.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-			<section id="header">
-				<div class="inner">
-					<div id="name-nav">
-						<h1>Aryan Binazir</h1>
-						<nav id="nav">
-							<ul class="icons">
-								<li><a target="_blank" href="https://www.linkedin.com/in/aryanbinazir/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
-								<li><a target="_blank" href="https://github.com/aryan-binazir" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-								<li><a target="_blank" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt"><span class="label">Resume</span></a></li>
-								<li><a href="mailto:abinazir@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
-							</ul>
-						</nav>
-					</div>
-					<img id="profile" src="./images/aryan-binazir.jpg" alt="Aryan Binazir">
-					<div id="bio">
-						<p>Applied AI Engineer building and deploying LLM and AI Agent infrastructure focused on fine-tuning, inference, and serving. Software Engineer at the core, with production backend experience in Go, Python, TypeScript, AWS, Docker, and Infrastructure as Code. Led development of core components for <a target="_blank" class="Triage orange-accent" href="https://team-triage.github.io/">Triage</a>.</p>
-						<p><a target="_blank" class="Triage orange-accent" href="https://team-triage.github.io/">Triage</a>, an open-source Kafka proxy addressing head-of-line blocking issues.</p>
-					</div>
-					<ul class="actions special">
-						<li><a href="#one" class="button scrolly">Triage</a></li>
-					</ul>
-				</div>
-			</section>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Aryan Binazir</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="images/Favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="assets/css/custom.css" />
+  </head>
+  <body class="site">
+    <div class="page">
+      <header class="site-header">
+        <div class="container header-inner">
+          <nav class="icon-nav" aria-label="Social links">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.linkedin.com/in/aryanbinazir/"
+              class="icon fab fa-linkedin-in"
+              aria-label="LinkedIn"
+            >
+              <span class="label">LinkedIn</span>
+            </a>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/aryan-binazir"
+              class="icon fab fa-github"
+              aria-label="GitHub"
+            >
+              <span class="label">GitHub</span>
+            </a>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="/assets/Aryan-Binazir-Resume.pdf"
+              class="icon fas fa-file-alt"
+              aria-label="Resume"
+            >
+              <span class="label">Resume</span>
+            </a>
+            <a
+              href="mailto:abinazir@gmail.com"
+              class="icon fas fa-envelope"
+              aria-label="Email"
+            >
+              <span class="label">Email</span>
+            </a>
+          </nav>
+        </div>
+      </header>
 
-		<!-- One -->
-			<section id="one" class="main style1">
-				<div class="container">
-					<div class="row gtr-150">
-						<div class="col-6 col-12-medium">
-							<header class="major">
-								<h2><a target="_blank" class="triage" href="https://team-triage.github.io/">Triage</a></h2>
-							</header>
-							<p>Triage is an open-source consumer proxy for Apache Kafka that solves head-of-line blocking caused by poison pill messages and non-uniform consumer latency. Once deployed, poison pill messages are identified and delivered to a dead letter store. By enabling additional consumer instances to consume messages, Triage uses parallelism to ensure that an unusually slow message will not block the queue.</p>
-							<p>The goal of Triage was to create a service that deals with head-of-line blocking in a message queue, while making it easy for consumer application developers to maintain their existing workflow.</p>
-							<ul class="actions special">
-								<li><a target="_blank" href="https://team-triage.github.io/case-study" class="button">Read the Case Study</a></li>
-							</ul>
-						</div>
-						<div class="col-6 col-12-medium imp-medium">
-								<span><a target="_blank" class="triage" href="https://team-triage.github.io/"><img class="logo" src="images/logo-color2.png" alt="Triage"/></a><span class="image fit"></span>
-						</div>
-					</div>
-				</div>
-			</section>
+      <main id="top">
+        <section class="hero">
+          <div class="container hero-grid">
+            <div class="hero-copy">
+              <h1 class="hero-title" data-reveal>Aryan Binazir</h1>
+              <p class="lede" data-reveal style="--delay: 0.08s">
+                <span class="role">Applied AI Engineer</span> building and deploying LLM
+                and AI Agent infrastructure focused on fine-tuning, inference, and
+                serving. Software Engineer at the core, with production backend
+                experience in Go, Python, TypeScript, AWS, Docker, and Infrastructure
+                as Code. Led development of core components for
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="accent"
+                  href="https://team-triage.github.io/"
+                  >Triage</a
+                >.
+              </p>
+              <p class="lede" data-reveal style="--delay: 0.16s">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="accent"
+                  href="https://team-triage.github.io/"
+                  >Triage</a
+                >, an open-source Kafka proxy addressing head-of-line blocking issues.
+              </p>
+              <div class="button-row hero-actions" data-reveal style="--delay: 0.24s">
+                <a href="#triage" class="btn">Triage</a>
+              </div>
+            </div>
+            <figure class="portrait" data-reveal style="--delay: 0.2s">
+              <img src="images/aryan-binazir.jpg" alt="Aryan Binazir" />
+            </figure>
+          </div>
+        </section>
 
+        <section id="triage" class="feature">
+          <div class="container">
+            <div class="feature-card feature-grid">
+              <div class="feature-copy" data-reveal>
+                <header class="section-head">
+                  <h2>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="accent"
+                      href="https://team-triage.github.io/"
+                      >Triage</a
+                    >
+                  </h2>
+                </header>
+                <p>
+                  Triage is an open-source consumer proxy for Apache Kafka that
+                  solves head-of-line blocking caused by poison pill messages and
+                  non-uniform consumer latency. Once deployed, poison pill messages
+                  are identified and delivered to a dead letter store. By enabling
+                  additional consumer instances to consume messages, Triage uses
+                  parallelism to ensure that an unusually slow message will not
+                  block the queue.
+                </p>
+                <p>
+                  The goal of Triage was to create a service that deals with
+                  head-of-line blocking in a message queue, while making it easy for
+                  consumer application developers to maintain their existing workflow.
+                </p>
+                <div class="button-row">
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://team-triage.github.io/case-study"
+                    class="btn secondary"
+                    >Read the Case Study</a
+                  >
+                </div>
+              </div>
+              <div class="feature-media" data-reveal style="--delay: 0.1s">
+                <img
+                  class="feature-logo"
+                  src="images/logo-color2.png"
+                  alt="Triage"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
-		<!-- Three -->
-			<section id="three" class="main style2 special">
-				<div class="container">
-					<header class="major">
-						<h2>Projects</h2>
-					</header>
-					<div class="row gtr-150">
-						<div class="col-4 col-12-medium">
-							<span class="image fit"><img src="images/RequestDjinn.jpg" alt="Request-Djinn"/></span>
-							<h3>Request-Djinn</h3>
-							<p>An HTTP webhook inspector created using <i class="triage">Express.js, React.js, Node.js, MongoDB & PostgreSQL</i> and deployed to a <i class="triage">Digital Ocean Droplet</i>.</p>
-						</div>
-						<div class="col-4 col-12-medium">
-							<span class="image fit"><img src="images/book-viewer.png" alt="BookWorm App"/></span>
-							<h3>BookWorm App</h3>
-							<p>A book-viewing application built using <i class="triage">Ruby, Sinatra, ERB & JavaScript</i>. Deployed to an <i class="triage">AWS EC2</i> instance.</p>
-						</div>
-						<div class="col-4 col-12-medium">
-							<span class="image fit"><img src="images/neovim-config.png" alt="Neovim Configuration"/></span>
-							<h3>Neovim Configuration</h3>
-							<p>Meticulously crafted development environment featuring <i class="triage">Neovim</i> and <i class="triage">Tmux</i> that enhances productivity through custom linting, autocompletion, and keybindings. Designed to create the perfect flow state for problem-solving.</p>
-						</div>
-					</div>
-				</div>
-			</section>
+        <section id="projects" class="projects">
+          <div class="container">
+            <header class="section-head" data-reveal>
+              <h2>Projects</h2>
+            </header>
+            <div class="projects-grid">
+              <article class="project-card" data-reveal style="--delay: 0.05s">
+                <img
+                  src="images/RequestDjinn.jpg"
+                  alt="Request-Djinn"
+                  loading="lazy"
+                />
+                <h3>Request-Djinn</h3>
+                <p>
+                  An HTTP webhook inspector created using
+                  <i>Express.js, React.js, Node.js, MongoDB &amp; PostgreSQL</i> and
+                  deployed to a <i>Digital Ocean Droplet</i>.
+                </p>
+              </article>
+              <article class="project-card" data-reveal style="--delay: 0.12s">
+                <img
+                  src="images/book-viewer.png"
+                  alt="BookWorm App"
+                  loading="lazy"
+                />
+                <h3>BookWorm App</h3>
+                <p>
+                  A book-viewing application built using
+                  <i>Ruby, Sinatra, ERB &amp; JavaScript</i>. Deployed to an
+                  <i>AWS EC2</i> instance.
+                </p>
+              </article>
+              <article class="project-card" data-reveal style="--delay: 0.19s">
+                <img
+                  src="images/neovim-config.png"
+                  alt="Neovim Configuration"
+                  loading="lazy"
+                />
+                <h3>Neovim Configuration</h3>
+                <p>
+                  Meticulously crafted development environment featuring
+                  <i>Neovim</i> and <i>Tmux</i> that enhances productivity through
+                  custom linting, autocompletion, and keybindings. Designed to
+                  create the perfect flow state for problem-solving.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
 
-		<!-- Footer -->
-			<section id="footer">
-				<ul class="icons">
-					<ul class="icons">
-						<li><a target="_blank" href="https://www.linkedin.com/in/aryanbinazir/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
-						<li><a target="_blank" href="https://github.com/aryan-binazir" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-						<li><a target="_blank" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt"><span class="label">Resume</span></a></li>
-						<li><a href="mailto:abinazir@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
-					</ul>
-				<ul class="copyright">
-					<li>&copy; Aryan Binazir</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-				</ul>
-			</section>
+      <footer class="site-footer">
+        <div class="container footer-inner">
+          <ul class="icon-nav" aria-label="Footer social links">
+            <li>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.linkedin.com/in/aryanbinazir/"
+                class="icon fab fa-linkedin-in"
+                aria-label="LinkedIn"
+              >
+                <span class="label">LinkedIn</span>
+              </a>
+            </li>
+            <li>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/aryan-binazir"
+                class="icon fab fa-github"
+                aria-label="GitHub"
+              >
+                <span class="label">GitHub</span>
+              </a>
+            </li>
+            <li>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="/assets/Aryan-Binazir-Resume.pdf"
+                class="icon fas fa-file-alt"
+                aria-label="Resume"
+              >
+                <span class="label">Resume</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="mailto:abinazir@gmail.com"
+                class="icon fas fa-envelope"
+                aria-label="Email"
+              >
+                <span class="label">Email</span>
+              </a>
+            </li>
+          </ul>
+          <ul class="footer-meta">
+            <li>&copy; Aryan Binazir</li>
+          </ul>
+        </div>
+      </footer>
+    </div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
+    <script src="assets/js/reveal.js"></script>
+  </body>
 </html>
