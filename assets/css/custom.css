@@ -221,16 +221,6 @@ ul {
   border-color: rgba(210, 140, 98, 0.6);
 }
 
-.btn.secondary {
-  background: transparent;
-  color: var(--ink);
-  border-color: var(--border);
-}
-
-.btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .portrait {
   position: relative;
   width: min(360px, 80vw);
@@ -355,16 +345,6 @@ ul {
   color: var(--accent-2);
 }
 
-a.accent {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.18em;
-}
-
-a.accent:hover {
-  color: var(--accent);
-}
-
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 2.8rem 0 3.5rem;
@@ -402,10 +382,6 @@ a.accent:hover {
   .hero-grid,
   .feature-grid {
     grid-template-columns: 1fr;
-  }
-
-  .portrait {
-    justify-self: start;
   }
 
   .projects-grid {
