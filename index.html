@@ -13,56 +13,435 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
-    <link rel="stylesheet" href="assets/css/custom.css" />
+    <style>
+      /* ═══════════════════════════════════════════
+         index-0  –  Current design, refined
+         Same DNA: palette, fonts, dot grid, orbs
+         Added: text nav, blog link, polish
+         ═══════════════════════════════════════════ */
+
+      :root {
+        --bg:        #0b0f14;
+        --bg-alt:    #111823;
+        --ink:       #e8edf2;
+        --muted:     #a1a9b5;
+        --accent:    #d28c62;
+        --accent-2:  #6fb8c9;
+        --card:      #141d28;
+        --border:    #2a3443;
+        --panel:     #101720;
+        --shadow:      0 24px 60px rgba(0,0,0,0.55);
+        --shadow-soft: 0 12px 32px rgba(0,0,0,0.35);
+        --scroll-offset: 84px;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html {
+        font-size: 86%;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: 'Sora', sans-serif;
+        color: var(--ink);
+        background: linear-gradient(140deg, var(--bg) 0%, #0f151d 45%, var(--bg-alt) 100%);
+        line-height: 1.65;
+      }
+
+      /* ── AMBIENT ORBS ── */
+      body::before,
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::before {
+        background: radial-gradient(600px circle at 12% 0%, rgba(210,140,98,0.14), transparent 60%);
+      }
+      body::after {
+        background: radial-gradient(700px circle at 85% 8%, rgba(111,184,201,0.12), transparent 55%);
+      }
+
+      section[id] { scroll-margin-top: var(--scroll-offset); }
+      img { max-width: 100%; display: block; }
+      a { color: inherit; text-decoration: none; }
+      ul { list-style: none; }
+
+      /* ── DOT GRID ── */
+      .page {
+        position: relative;
+        z-index: 1;
+        background-image: radial-gradient(rgba(255,255,255,0.025) 0.6px, transparent 0.6px);
+        background-size: 18px 18px;
+      }
+
+      .container {
+        width: min(1120px, 92vw);
+        margin: 0 auto;
+      }
+
+      /* ═════════════════ HEADER ═════════════════ */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(11,15,20,0.9);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 0;
+      }
+
+      /* Logo / Name */
+      .header-brand {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+
+      /* Right side: text nav + icon nav */
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      /* Text navigation links */
+      .text-nav {
+        display: flex;
+        gap: 1.6rem;
+      }
+      .text-nav a {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--muted);
+        transition: color 0.2s;
+      }
+      .text-nav a:hover { color: var(--accent-2); }
+
+      /* Divider between text nav and icon nav */
+      .nav-divider {
+        width: 1px;
+        height: 22px;
+        background: var(--border);
+      }
+
+      /* Icon links */
+      .icon-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .icon-nav li { display: flex; }
+      .icon-nav .icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(20,29,40,0.92);
+        box-shadow: var(--shadow-soft);
+        font-size: 0.95rem;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      }
+      .icon-nav .icon:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+        border-color: rgba(111,184,201,0.6);
+      }
+      .icon-nav .label {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        white-space: nowrap; border: 0;
+      }
+
+      /* ═════════════════ HERO ═════════════════ */
+      .hero {
+        padding: clamp(3.5rem, 7.2vw, 6rem) 0 clamp(3rem, 5.4vw, 4.5rem);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 3.5rem;
+        align-items: start;
+      }
+      .hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.6rem, 4.5vw, 4.4rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.25rem;
+      }
+      .lede {
+        font-size: clamp(1rem, 1.08vw, 1.15rem);
+        color: var(--muted);
+        max-width: 54ch;
+      }
+      .role {
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: 0.01em;
+      }
+      .button-row {
+        margin-top: 1.6rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+      }
+
+      /* Portrait */
+      .portrait {
+        position: relative;
+        width: min(360px, 80vw);
+        justify-self: center;
+      }
+      .portrait img {
+        border-radius: 26px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+      .portrait::after {
+        content: '';
+        position: absolute;
+        inset: 12px -12px -12px 12px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        z-index: -1;
+        background: rgba(20,29,40,0.7);
+      }
+
+      /* ═════════════════ BUTTONS ═════════════════ */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1.6rem;
+        border-radius: 999px;
+        background: var(--accent-2);
+        color: var(--bg);
+        font-weight: 600;
+        border: 1px solid rgba(111,184,201,0.5);
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+        background: var(--accent);
+        color: var(--bg);
+        border-color: rgba(210,140,98,0.6);
+      }
+
+      /* ═════════════════ SECTIONS ═════════════════ */
+      .section-head h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(1.6rem, 2.7vw, 2.4rem);
+        letter-spacing: -0.01em;
+        margin-bottom: 1rem;
+      }
+
+      /* ── TRIAGE / FEATURE ── */
+      .feature {
+        padding: 0 0 clamp(3.5rem, 6.3vw, 5rem);
+      }
+      .feature-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: clamp(2rem, 5vw, 3rem);
+        box-shadow: var(--shadow-soft);
+      }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 2.5rem;
+        align-items: center;
+      }
+      .feature-copy p { color: var(--muted); }
+      .feature-copy p + p { margin-top: 1rem; }
+      .feature-media {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 220px;
+      }
+      .feature-logo {
+        width: min(280px, 80%);
+        height: auto;
+      }
+
+      /* ── PROJECTS ── */
+      .projects {
+        padding: 0 0 clamp(4rem, 7.2vw, 6rem);
+      }
+      .projects-grid {
+        margin-top: 1.1rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.6rem;
+      }
+      .project-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        transition: transform 0.3s, border-color 0.3s;
+      }
+      .project-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(111,184,201,0.4);
+      }
+      .project-card img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+      }
+      .project-card h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        margin: 0.9rem 1.2rem 0.45rem;
+      }
+      .project-card p {
+        margin: 0 1.2rem 1.1rem;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+      .project-card i {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      /* ═════════════════ FOOTER ═════════════════ */
+      .site-footer {
+        border-top: 1px solid var(--border);
+        padding: 2.8rem 0 3.5rem;
+        background: rgba(11,15,20,0.65);
+      }
+      .footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .footer-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      /* ═════════════════ SCROLL REVEAL ═════════════════ */
+      [data-reveal] {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+        transition-delay: var(--delay, 0s);
+      }
+      [data-reveal].is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ═════════════════ RESPONSIVE ═════════════════ */
+      @media (max-width: 960px) {
+        .hero-grid,
+        .feature-grid { grid-template-columns: 1fr; }
+        .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .header-inner { justify-content: center; }
+        .header-brand { display: none; }
+        .header-right { width: 100%; justify-content: center; }
+      }
+
+      @media (max-width: 700px) {
+        .projects-grid { grid-template-columns: 1fr; }
+        .icon-nav { flex-wrap: wrap; justify-content: center; }
+        .text-nav { gap: 1rem; }
+        .text-nav a { font-size: 0.82rem; }
+        .nav-divider { display: none; }
+        .site-header { position: static; }
+        .header-right { flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+        .footer-inner { justify-content: center; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        [data-reveal] { opacity: 1; transform: none; transition: none; }
+      }
+    </style>
   </head>
   <body class="site">
     <div class="page">
+      <!-- ═════════════════ HEADER ═════════════════ -->
       <header class="site-header">
         <div class="container header-inner">
-          <nav class="icon-nav" aria-label="Social links">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.linkedin.com/in/aryanbinazir/"
-              class="icon fab fa-linkedin-in"
-              aria-label="LinkedIn"
-              title="LinkedIn"
-            >
-              <span class="label">LinkedIn</span>
-            </a>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://github.com/aryan-binazir"
-              class="icon fab fa-github"
-              aria-label="GitHub"
-              title="GitHub"
-            >
-              <span class="label">GitHub</span>
-            </a>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="/assets/Aryan-Binazir-Resume.pdf"
-              class="icon fas fa-file-alt"
-              aria-label="Resume"
-              title="Resume"
-            >
-              <span class="label">Resume</span>
-            </a>
-            <a
-              href="mailto:abinazir@gmail.com"
-              class="icon fas fa-envelope"
-              aria-label="Email"
-              title="Email"
-            >
-              <span class="label">Email</span>
-            </a>
-          </nav>
+          <span class="header-brand">Aryan Binazir</span>
+
+          <div class="header-right">
+            <nav class="text-nav" aria-label="Main navigation">
+              <a href="#triage">Triage</a>
+              <a href="#projects">Projects</a>
+              <!-- <a href="blog.html">Blog</a> -->
+            </nav>
+
+            <span class="nav-divider"></span>
+
+            <nav class="icon-nav" aria-label="Social links">
+              <a target="_blank" rel="noopener noreferrer"
+                href="https://www.linkedin.com/in/aryanbinazir/"
+                class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn">
+                <span class="label">LinkedIn</span>
+              </a>
+              <a target="_blank" rel="noopener noreferrer"
+                href="https://github.com/aryan-binazir"
+                class="icon fab fa-github" aria-label="GitHub" title="GitHub">
+                <span class="label">GitHub</span>
+              </a>
+              <a target="_blank" rel="noopener noreferrer"
+                href="/assets/Aryan-Binazir-Resume.pdf"
+                class="icon fas fa-file-alt" aria-label="Resume" title="Resume">
+                <span class="label">Resume</span>
+              </a>
+              <a href="mailto:abinazir@gmail.com"
+                class="icon fas fa-envelope" aria-label="Email" title="Email">
+                <span class="label">Email</span>
+              </a>
+            </nav>
+          </div>
         </div>
       </header>
 
+      <!-- ═════════════════ MAIN ═════════════════ -->
       <main id="top">
+        <!-- ── HERO ── -->
         <section class="hero">
           <div class="container hero-grid">
             <div class="hero-copy">
@@ -79,7 +458,7 @@
                 <span class="role">Triage</span>, an open-source Kafka proxy
                 addressing head-of-line blocking issues.
               </p>
-              <div class="button-row hero-actions" data-reveal style="--delay: 0.24s">
+              <div class="button-row" data-reveal style="--delay: 0.24s">
                 <a href="#triage" class="btn">Triage</a>
               </div>
             </div>
@@ -89,6 +468,7 @@
           </div>
         </section>
 
+        <!-- ── TRIAGE ── -->
         <section id="triage" class="feature">
           <div class="container">
             <div class="feature-card feature-grid">
@@ -111,27 +491,19 @@
                   consumer application developers to maintain their existing workflow.
                 </p>
                 <div class="button-row">
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <a target="_blank" rel="noopener noreferrer"
                     href="https://team-triage.github.io/case-study"
-                    class="btn"
-                    >Read the Case Study</a
-                  >
+                    class="btn">Read the Case Study</a>
                 </div>
               </div>
               <div class="feature-media" data-reveal style="--delay: 0.1s">
-                <img
-                  class="feature-logo"
-                  src="images/logo-color2.png"
-                  alt="Triage"
-                  loading="lazy"
-                />
+                <img class="feature-logo" src="images/logo-color2.png" alt="Triage" loading="lazy" />
               </div>
             </div>
           </div>
         </section>
 
+        <!-- ── PROJECTS ── -->
         <section id="projects" class="projects">
           <div class="container">
             <header class="section-head" data-reveal>
@@ -139,11 +511,7 @@
             </header>
             <div class="projects-grid">
               <article class="project-card" data-reveal style="--delay: 0.05s">
-                <img
-                  src="images/RequestDjinn.jpg"
-                  alt="Request-Djinn"
-                  loading="lazy"
-                />
+                <img src="images/RequestDjinn.jpg" alt="Request-Djinn" loading="lazy" />
                 <h3>Request-Djinn</h3>
                 <p>
                   An HTTP webhook inspector created using
@@ -152,11 +520,7 @@
                 </p>
               </article>
               <article class="project-card" data-reveal style="--delay: 0.12s">
-                <img
-                  src="images/ride-home-router.png"
-                  alt="Ride Home Router"
-                  loading="lazy"
-                />
+                <img src="images/ride-home-router.png" alt="Ride Home Router" loading="lazy" />
                 <h3>Ride Home Router</h3>
                 <p>
                   Tackles real-world vehicle routing: a multi-phase algorithm
@@ -168,11 +532,7 @@
                 </p>
               </article>
               <article class="project-card" data-reveal style="--delay: 0.19s">
-                <img
-                  src="images/neovim-config.png"
-                  alt="Neovim Configuration"
-                  loading="lazy"
-                />
+                <img src="images/neovim-config.png" alt="Neovim Configuration" loading="lazy" />
                 <h3>Neovim Configuration</h3>
                 <p>
                   Meticulously crafted development environment featuring
@@ -186,52 +546,34 @@
         </section>
       </main>
 
+      <!-- ═════════════════ FOOTER ═════════════════ -->
       <footer class="site-footer">
         <div class="container footer-inner">
           <ul class="icon-nav" aria-label="Footer social links">
             <li>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
+              <a target="_blank" rel="noopener noreferrer"
                 href="https://www.linkedin.com/in/aryanbinazir/"
-                class="icon fab fa-linkedin-in"
-                aria-label="LinkedIn"
-                title="LinkedIn"
-              >
+                class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn">
                 <span class="label">LinkedIn</span>
               </a>
             </li>
             <li>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
+              <a target="_blank" rel="noopener noreferrer"
                 href="https://github.com/aryan-binazir"
-                class="icon fab fa-github"
-                aria-label="GitHub"
-                title="GitHub"
-              >
+                class="icon fab fa-github" aria-label="GitHub" title="GitHub">
                 <span class="label">GitHub</span>
               </a>
             </li>
             <li>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
+              <a target="_blank" rel="noopener noreferrer"
                 href="/assets/Aryan-Binazir-Resume.pdf"
-                class="icon fas fa-file-alt"
-                aria-label="Resume"
-                title="Resume"
-              >
+                class="icon fas fa-file-alt" aria-label="Resume" title="Resume">
                 <span class="label">Resume</span>
               </a>
             </li>
             <li>
-              <a
-                href="mailto:abinazir@gmail.com"
-                class="icon fas fa-envelope"
-                aria-label="Email"
-                title="Email"
-              >
+              <a href="mailto:abinazir@gmail.com"
+                class="icon fas fa-envelope" aria-label="Email" title="Email">
                 <span class="label">Email</span>
               </a>
             </li>
