@@ -1,32 +1,101 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────
 # build-posts.sh
-# Scans posts/*.md and regenerates posts/posts.json
-# Run this after adding or removing a .md file:
+# Reads posts/*.md, parses frontmatter, and generates
+# assets/js/posts-data.js (embedded post data).
+#
+# Run this after adding, editing, or removing a .md file:
 #   ./build-posts.sh
 # ─────────────────────────────────────────────
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 POSTS_DIR="$DIR/posts"
-OUT="$POSTS_DIR/posts.json"
+OUT="$DIR/assets/js/posts-data.js"
 
-# Collect all .md filenames (basename only)
+# Collect .md files
 files=()
 for f in "$POSTS_DIR"/*.md; do
   [ -f "$f" ] || continue
-  files+=("$(basename "$f")")
+  files+=("$f")
 done
 
-# Write JSON array
-echo "[" > "$OUT"
+if [ ${#files[@]} -eq 0 ]; then
+  echo "window.POSTS_DATA = [];" > "$OUT"
+  echo "✓ posts-data.js updated with 0 posts"
+  exit 0
+fi
+
+# Start JS file
+echo "window.POSTS_DATA = [" > "$OUT"
+
 for i in "${!files[@]}"; do
+  f="${files[$i]}"
+  in_frontmatter=0
+  past_frontmatter=0
+  title=""
+  date=""
+  tag=""
+  excerpt=""
+  body=""
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Detect frontmatter delimiters
+    if [ "$past_frontmatter" -eq 0 ] && [ "$line" = "---" ]; then
+      if [ "$in_frontmatter" -eq 0 ]; then
+        in_frontmatter=1
+        continue
+      else
+        past_frontmatter=1
+        continue
+      fi
+    fi
+
+    # Parse frontmatter key: value
+    if [ "$in_frontmatter" -eq 1 ] && [ "$past_frontmatter" -eq 0 ]; then
+      key="${line%%:*}"
+      val="${line#*: }"
+      # Strip surrounding quotes
+      val="${val#\"}"
+      val="${val%\"}"
+      val="${val#\'}"
+      val="${val%\'}"
+      case "$key" in
+        title)   title="$val" ;;
+        date)    date="$val" ;;
+        tag)     tag="$val" ;;
+        excerpt) excerpt="$val" ;;
+      esac
+      continue
+    fi
+
+    # Accumulate body
+    if [ "$past_frontmatter" -eq 1 ]; then
+      body+="$line"$'\n'
+    fi
+  done < "$f"
+
+  # JSON-escape the body: backslashes, quotes, newlines, tabs
+  escaped_body=$(printf '%s' "$body" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
+  escaped_title=$(printf '%s' "$title" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
+  escaped_excerpt=$(printf '%s' "$excerpt" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
+
   comma=","
   if [ "$i" -eq $(( ${#files[@]} - 1 )) ]; then
     comma=""
   fi
-  echo "  \"${files[$i]}\"$comma" >> "$OUT"
-done
-echo "]" >> "$OUT"
 
-echo "✓ posts.json updated with ${#files[@]} post(s)"
+  cat >> "$OUT" <<ENTRY
+  {
+    "title": "${escaped_title}",
+    "date": "${date}",
+    "tag": "${tag}",
+    "excerpt": "${escaped_excerpt}",
+    "body": "${escaped_body}"
+  }${comma}
+ENTRY
+done
+
+echo "];" >> "$OUT"
+
+echo "✓ posts-data.js updated with ${#files[@]} post(s)"
