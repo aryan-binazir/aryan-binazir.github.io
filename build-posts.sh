@@ -15,6 +15,12 @@ POSTS_DIR="$DIR/posts"
 BLOG_DIR="$DIR/blog"
 DATA_OUT="$DIR/assets/js/posts-data.js"
 SITE_URL="https://aryanbinazir.dev"
+MANIFEST_FILE="$BLOG_DIR/.generated-post-slugs"
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "✗ python3 is required to build blog posts." >&2
+  exit 1
+fi
 
 # ── Slug from filename ──
 make_slug() {
@@ -34,7 +40,13 @@ print(html.escape(sys.stdin.read(), quote=True), end='')
 
 # ── JSON-escape ──
 json_escape() {
-  printf '%s' "$1" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1], end="")'
+  printf '%s' "$1" | python3 -c '
+import sys, json
+s = json.dumps(sys.stdin.read())[1:-1]
+s = s.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+s = s.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
+print(s, end="")
+'
 }
 
 # ── Collect posts ──
@@ -61,17 +73,48 @@ all_bodies=()
 
 for f in "${files[@]}"; do
   in_fm=0; past_fm=0
+  line_no=0
   title=""; date=""; tag=""; excerpt=""; body=""
 
   while IFS= read -r line || [ -n "$line" ]; do
+    line_no=$((line_no + 1))
+
     if [ "$past_fm" -eq 0 ] && [ "$line" = "---" ]; then
       if [ "$in_fm" -eq 0 ]; then in_fm=1; continue; else past_fm=1; continue; fi
     fi
     if [ "$in_fm" -eq 1 ] && [ "$past_fm" -eq 0 ]; then
+      if [[ "$line" =~ ^[[:space:]]*$ ]] || [[ "$line" =~ ^[[:space:]]*# ]]; then
+        continue
+      fi
+      if [[ "$line" =~ ^[[:space:]]+ ]]; then
+        echo "✗ $(basename "$f") has unsupported indented/multiline frontmatter at line $line_no" >&2
+        exit 1
+      fi
+      if [[ "$line" != *:* ]]; then
+        echo "✗ $(basename "$f") has malformed frontmatter at line $line_no: '$line'" >&2
+        exit 1
+      fi
+
       key="${line%%:*}"
-      val="${line#*: }"
-      val="${val#\"}" ; val="${val%\"}"
-      val="${val#\'}" ; val="${val%\'}"
+      raw_val="${line#*:}"
+      key="${key%"${key##*[![:space:]]}"}"
+      val="${raw_val#"${raw_val%%[![:space:]]*}"}"
+
+      if [ -z "$key" ]; then
+        echo "✗ $(basename "$f") has empty frontmatter key at line $line_no" >&2
+        exit 1
+      fi
+      if [[ "$val" == "|" || "$val" == ">" || "$val" == "|-" || "$val" == "|+" || "$val" == ">-" || "$val" == ">+" ]]; then
+        echo "✗ $(basename "$f") uses unsupported multiline frontmatter for '$key' at line $line_no" >&2
+        exit 1
+      fi
+
+      if [[ "$val" =~ ^\".*\"$ ]]; then
+        val="${val:1:${#val}-2}"
+      elif [[ "$val" =~ ^\'.*\'$ ]]; then
+        val="${val:1:${#val}-2}"
+      fi
+
       case "$key" in
         title)   title="$val" ;;
         date)    date="$val" ;;
@@ -83,6 +126,15 @@ for f in "${files[@]}"; do
     if [ "$past_fm" -eq 1 ]; then body+="$line"$'\n'; fi
   done < "$f"
 
+  if [ "$in_fm" -eq 0 ]; then
+    echo "✗ $(basename "$f") is missing opening frontmatter delimiter '---'" >&2
+    exit 1
+  fi
+  if [ "$past_fm" -eq 0 ]; then
+    echo "✗ $(basename "$f") is missing closing frontmatter delimiter '---'" >&2
+    exit 1
+  fi
+
   # Validate required fields
   fname="$(basename "$f")"
   missing=""
@@ -92,6 +144,10 @@ for f in "${files[@]}"; do
   [ -z "$excerpt" ] && missing+="excerpt "
   if [ -n "$missing" ]; then
     echo "✗ $fname is missing required frontmatter: $missing" >&2
+    exit 1
+  fi
+  if ! [[ "$date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    echo "✗ $fname has invalid date '$date' (expected YYYY-MM-DD)" >&2
     exit 1
   fi
 
@@ -114,9 +170,14 @@ for f in "${files[@]}"; do
   all_bodies+=("$body")
 done
 
-# ── Clean old generated blog dirs ──
-if [ -d "$BLOG_DIR" ]; then
-  rm -rf "$BLOG_DIR"
+# ── Clean old generated blog dirs (tracked via manifest) ──
+if [ -f "$MANIFEST_FILE" ]; then
+  while IFS= read -r old_slug || [ -n "$old_slug" ]; do
+    [ -n "$old_slug" ] || continue
+    if [[ "$old_slug" =~ ^[a-z0-9-]+$ ]] && [ -d "$BLOG_DIR/$old_slug" ]; then
+      rm -rf "$BLOG_DIR/$old_slug"
+    fi
+  done < "$MANIFEST_FILE"
 fi
 mkdir -p "$BLOG_DIR"
 
@@ -136,16 +197,27 @@ for i in "${!all_slugs[@]}"; do
   body_json="$(json_escape "$body")"
 
   # Format display date
-  display_date="$(python3 -c "
+  display_date="$(python3 - "$date" <<'__DISPLAY_DATE_PY_EOF__'
 from datetime import datetime
-d = datetime.strptime('$date', '%Y-%m-%d')
-print(d.strftime('%b %-d, %Y'))
-")"
+import sys
+
+date_str = sys.argv[1]
+try:
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+except ValueError:
+    sys.stderr.write(f"Invalid date '{date_str}' (expected YYYY-MM-DD).\n")
+    sys.exit(1)
+
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+print(f"{months[dt.month - 1]} {dt.day}, {dt.year}")
+__DISPLAY_DATE_PY_EOF__
+)"
 
   post_dir="$BLOG_DIR/$slug"
   mkdir -p "$post_dir"
 
-  cat > "$post_dir/index.html" <<POSTEOF
+  cat > "$post_dir/index.html" <<__POST_TEMPLATE_ARYAN_BINAZIR_EOF__
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -288,7 +360,7 @@ print(d.strftime('%b %-d, %Y'))
             <nav class="icon-nav" aria-label="Social links">
               <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a>
               <a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a>
-              <a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
+              <a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
               <a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a>
             </nav>
           </div>
@@ -318,7 +390,7 @@ print(d.strftime('%b %-d, %Y'))
           <ul class="icon-nav" aria-label="Footer social links">
             <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a></li>
             <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a></li>
-            <li><a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
+            <li><a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
             <li><a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a></li>
           </ul>
           <ul class="footer-meta"><li>&copy; Aryan Binazir</li></ul>
@@ -328,14 +400,76 @@ print(d.strftime('%b %-d, %Y'))
 
     <script src="../../assets/js/marked.min.js"></script>
     <script>
-      document.getElementById('post-body').innerHTML = marked.parse("${body_json}");
+      (() => {
+        const markdownSource = "${body_json}";
+
+        function isSafeUrl(urlValue) {
+          if (!urlValue) return false;
+          if (
+            urlValue.startsWith('#') ||
+            urlValue.startsWith('/') ||
+            urlValue.startsWith('./') ||
+            urlValue.startsWith('../')
+          ) return true;
+          try {
+            const parsed = new URL(urlValue, window.location.href);
+            return ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol);
+          } catch {
+            return false;
+          }
+        }
+
+        function sanitizeHtml(inputHtml) {
+          const template = document.createElement('template');
+          template.innerHTML = inputHtml;
+
+          template.content.querySelectorAll('script, iframe, object, embed, meta, link, base, form, style').forEach((node) => {
+            node.remove();
+          });
+
+          template.content.querySelectorAll('*').forEach((element) => {
+            Array.from(element.attributes).forEach((attribute) => {
+              const name = attribute.name.toLowerCase();
+              const value = attribute.value.trim();
+
+              if (name.startsWith('on')) {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'style' || name === 'srcdoc' || name === 'srcset') {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'href' || name === 'src' || name === 'xlink:href') {
+                if (!isSafeUrl(value)) {
+                  element.removeAttribute(attribute.name);
+                }
+              }
+            });
+          });
+
+          return template.innerHTML;
+        }
+
+        const renderedHtml = marked.parse(markdownSource);
+        document.getElementById('post-body').innerHTML = sanitizeHtml(renderedHtml);
+      })();
     </script>
   </body>
 </html>
-POSTEOF
+__POST_TEMPLATE_ARYAN_BINAZIR_EOF__
 
   echo "  ✓ blog/$slug/index.html"
 done
+
+# Track generated slugs so future builds only delete generated post dirs.
+{
+  for slug in "${all_slugs[@]}"; do
+    echo "$slug"
+  done
+} > "$MANIFEST_FILE"
 
 # ── Generate listing data (metadata only, no body) ──
 echo "window.POSTS_DATA = [" > "$DATA_OUT"
@@ -344,18 +478,20 @@ for i in "${!all_slugs[@]}"; do
   if [ "$i" -eq $(( ${#all_slugs[@]} - 1 )) ]; then comma=""; fi
 
   escaped_title="$(json_escape "${all_titles[$i]}")"
+  escaped_date="$(json_escape "${all_dates[$i]}")"
+  escaped_tag="$(json_escape "${all_tags[$i]}")"
   escaped_excerpt="$(json_escape "${all_excerpts[$i]}")"
 
-  cat >> "$DATA_OUT" <<DATAEOF
+  cat >> "$DATA_OUT" <<__POSTS_DATA_JSON_ITEM_EOF__
   {
     "title": "${escaped_title}",
-    "date": "${all_dates[$i]}",
-    "tag": "${all_tags[$i]}",
+    "date": "${escaped_date}",
+    "tag": "${escaped_tag}",
     "excerpt": "${escaped_excerpt}",
     "slug": "${all_slugs[$i]}",
     "url": "blog/${all_slugs[$i]}/index.html"
   }${comma}
-DATAEOF
+__POSTS_DATA_JSON_ITEM_EOF__
 done
 echo "];" >> "$DATA_OUT"
 

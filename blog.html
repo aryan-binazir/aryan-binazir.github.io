@@ -194,6 +194,15 @@
         flex-direction: column;
         gap: 1.8rem;
       }
+      .empty-state {
+        text-align: center;
+      }
+      .empty-state h2 {
+        margin-bottom: 0.45rem;
+      }
+      .empty-state p {
+        color: var(--muted);
+      }
 
       .post-card {
         background: var(--card);
@@ -345,7 +354,7 @@
                 <span class="label">GitHub</span>
               </a>
               <a target="_blank" rel="noopener noreferrer"
-                href="/assets/Aryan-Binazir-Resume.pdf"
+                href="assets/Aryan-Binazir-Resume.pdf"
                 class="icon fas fa-file-alt" aria-label="Resume" title="Resume">
                 <span class="label">Resume</span>
               </a>
@@ -396,7 +405,7 @@
             </li>
             <li>
               <a target="_blank" rel="noopener noreferrer"
-                href="/assets/Aryan-Binazir-Resume.pdf"
+                href="assets/Aryan-Binazir-Resume.pdf"
                 class="icon fas fa-file-alt" aria-label="Resume" title="Resume">
                 <span class="label">Resume</span>
               </a>
@@ -432,6 +441,15 @@
 
         // Sort by date descending
         posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+        if (posts.length === 0) {
+          const empty = document.createElement('article');
+          empty.className = 'post-card empty-state';
+          empty.setAttribute('data-reveal', '');
+          empty.style.setProperty('--delay', '0.05s');
+          empty.innerHTML = '<h2>No posts yet</h2><p>Check back soon for new writing.</p>';
+          listEl.appendChild(empty);
+        }
 
         posts.forEach((post, i) => {
           const delay = (0.05 + i * 0.07).toFixed(2);

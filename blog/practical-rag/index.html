@@ -140,7 +140,7 @@
             <nav class="icon-nav" aria-label="Social links">
               <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a>
               <a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a>
-              <a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
+              <a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
               <a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a>
             </nav>
           </div>
@@ -170,7 +170,7 @@
           <ul class="icon-nav" aria-label="Footer social links">
             <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a></li>
             <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a></li>
-            <li><a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
+            <li><a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
             <li><a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a></li>
           </ul>
           <ul class="footer-meta"><li>&copy; Aryan Binazir</li></ul>
@@ -180,7 +180,62 @@
 
     <script src="../../assets/js/marked.min.js"></script>
     <script>
-      document.getElementById('post-body').innerHTML = marked.parse("\nEveryone's building RAG pipelines right now, and most of the tutorials make it look trivial: embed your documents, throw them in a vector store, retrieve the top-k chunks, stuff them into a prompt. Ship it. In practice, every one of those steps hides a set of decisions that will make or break your system's usefulness.\n\n## Chunking Is the Whole Game\n\nYour retrieval quality is bounded by your chunking strategy. Split too aggressively and you lose context. Split too conservatively and you dilute relevance. I've found that recursive character splitting with overlap works for most document types, but structured data (tables, code, configs) almost always needs custom logic.\n\n## Embedding Model Selection\n\nNot all embeddings are created equal. For domain-specific use cases, a fine-tuned embedding model consistently outperforms general-purpose ones. The MTEB leaderboard is a good starting point, but benchmark performance doesn't always translate to your specific retrieval task. Test with your actual data.\n\n## Retrieval Strategy\n\nPure vector similarity search gets you 70% of the way there. The remaining 30% comes from hybrid approaches:\n\n- **Hybrid search:** Combine dense vector search with sparse keyword matching (BM25). Catches cases where exact terminology matters.\n- **Reranking:** Use a cross-encoder to rerank your initial retrieval results. Adds latency but significantly improves precision.\n- **Metadata filtering:** Filter by document type, date, or source before vector search. Reduces noise dramatically.\n\n## Prompt Engineering for RAG\n\nThe prompt template matters more than you'd think. Explicitly telling the model to only use the provided context, to cite sources, and to say \"I don't know\" when the context doesn't support an answer \u2014 these aren't nice-to-haves, they're requirements for a system that users can trust.\n\n```\n# Basic RAG prompt structure\nYou are a helpful assistant. Answer the question using ONLY\nthe context provided below. If the context doesn't contain\nenough information to answer, say \"I don't have enough\ninformation to answer that.\"\n\nContext:\n{retrieved_chunks}\n\nQuestion: {user_query}\n```\n\n## Evaluating RAG Systems\n\nYou need three metrics at minimum: retrieval precision (are you fetching relevant chunks?), answer faithfulness (is the answer grounded in the retrieved context?), and answer relevance (does the answer actually address the question?). Build an eval set early and run it on every change to your pipeline.\n");
+      (() => {
+        const markdownSource = "\nEveryone's building RAG pipelines right now, and most of the tutorials make it look trivial: embed your documents, throw them in a vector store, retrieve the top-k chunks, stuff them into a prompt. Ship it. In practice, every one of those steps hides a set of decisions that will make or break your system's usefulness.\n\n## Chunking Is the Whole Game\n\nYour retrieval quality is bounded by your chunking strategy. Split too aggressively and you lose context. Split too conservatively and you dilute relevance. I've found that recursive character splitting with overlap works for most document types, but structured data (tables, code, configs) almost always needs custom logic.\n\n## Embedding Model Selection\n\nNot all embeddings are created equal. For domain-specific use cases, a fine-tuned embedding model consistently outperforms general-purpose ones. The MTEB leaderboard is a good starting point, but benchmark performance doesn't always translate to your specific retrieval task. Test with your actual data.\n\n## Retrieval Strategy\n\nPure vector similarity search gets you 70% of the way there. The remaining 30% comes from hybrid approaches:\n\n- **Hybrid search:** Combine dense vector search with sparse keyword matching (BM25). Catches cases where exact terminology matters.\n- **Reranking:** Use a cross-encoder to rerank your initial retrieval results. Adds latency but significantly improves precision.\n- **Metadata filtering:** Filter by document type, date, or source before vector search. Reduces noise dramatically.\n\n## Prompt Engineering for RAG\n\nThe prompt template matters more than you'd think. Explicitly telling the model to only use the provided context, to cite sources, and to say \"I don't know\" when the context doesn't support an answer \u2014 these aren't nice-to-haves, they're requirements for a system that users can trust.\n\n```\n# Basic RAG prompt structure\nYou are a helpful assistant. Answer the question using ONLY\nthe context provided below. If the context doesn't contain\nenough information to answer, say \"I don't have enough\ninformation to answer that.\"\n\nContext:\n{retrieved_chunks}\n\nQuestion: {user_query}\n```\n\n## Evaluating RAG Systems\n\nYou need three metrics at minimum: retrieval precision (are you fetching relevant chunks?), answer faithfulness (is the answer grounded in the retrieved context?), and answer relevance (does the answer actually address the question?). Build an eval set early and run it on every change to your pipeline.\n";
+
+        function isSafeUrl(urlValue) {
+          if (!urlValue) return false;
+          if (
+            urlValue.startsWith('#') ||
+            urlValue.startsWith('/') ||
+            urlValue.startsWith('./') ||
+            urlValue.startsWith('../')
+          ) return true;
+          try {
+            const parsed = new URL(urlValue, window.location.href);
+            return ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol);
+          } catch {
+            return false;
+          }
+        }
+
+        function sanitizeHtml(inputHtml) {
+          const template = document.createElement('template');
+          template.innerHTML = inputHtml;
+
+          template.content.querySelectorAll('script, iframe, object, embed, meta, link, base, form, style').forEach((node) => {
+            node.remove();
+          });
+
+          template.content.querySelectorAll('*').forEach((element) => {
+            Array.from(element.attributes).forEach((attribute) => {
+              const name = attribute.name.toLowerCase();
+              const value = attribute.value.trim();
+
+              if (name.startsWith('on')) {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'style' || name === 'srcdoc' || name === 'srcset') {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'href' || name === 'src' || name === 'xlink:href') {
+                if (!isSafeUrl(value)) {
+                  element.removeAttribute(attribute.name);
+                }
+              }
+            });
+          });
+
+          return template.innerHTML;
+        }
+
+        const renderedHtml = marked.parse(markdownSource);
+        document.getElementById('post-body').innerHTML = sanitizeHtml(renderedHtml);
+      })();
     </script>
   </body>
 </html>

@@ -140,7 +140,7 @@
             <nav class="icon-nav" aria-label="Social links">
               <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a>
               <a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a>
-              <a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
+              <a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a>
               <a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a>
             </nav>
           </div>
@@ -170,7 +170,7 @@
           <ul class="icon-nav" aria-label="Footer social links">
             <li><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aryanbinazir/" class="icon fab fa-linkedin-in" aria-label="LinkedIn" title="LinkedIn"><span class="label">LinkedIn</span></a></li>
             <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/aryan-binazir" class="icon fab fa-github" aria-label="GitHub" title="GitHub"><span class="label">GitHub</span></a></li>
-            <li><a target="_blank" rel="noopener noreferrer" href="/assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
+            <li><a target="_blank" rel="noopener noreferrer" href="../../assets/Aryan-Binazir-Resume.pdf" class="icon fas fa-file-alt" aria-label="Resume" title="Resume"><span class="label">Resume</span></a></li>
             <li><a href="mailto:abinazir@gmail.com" class="icon fas fa-envelope" aria-label="Email" title="Email"><span class="label">Email</span></a></li>
           </ul>
           <ul class="footer-meta"><li>&copy; Aryan Binazir</li></ul>
@@ -180,7 +180,62 @@
 
     <script src="../../assets/js/marked.min.js"></script>
     <script>
-      document.getElementById('post-body').innerHTML = marked.parse("\nIf you've ever operated a Kafka cluster in production, you've probably hit this: one message takes 30 seconds to process, and suddenly your entire partition is backed up. Every message behind it waits, regardless of how trivial they are. This is head-of-line blocking, and it's one of the most common operational headaches in event-driven architectures.\n\n## The Core Problem\n\nKafka guarantees ordering within a partition. That's a feature, not a bug. But it means a single \"poison pill\" message \u2014 one that triggers an exception, hangs on a network call, or just takes an unusually long time \u2014 will block every message queued behind it. In the worst case, your consumer group grinds to a halt and your lag metrics skyrocket.\n\n> The irony of distributed systems: one slow node can make the whole system feel slower than a single node ever would.\n\n## Common Workarounds (and Why They Fall Short)\n\n- **More partitions:** Helps parallelize, but doesn't solve the fundamental issue. A slow message still blocks its partition.\n- **Timeouts and retries:** You can set processing timeouts, but choosing the right value is a guessing game. Too low and you drop legitimate work; too high and you're back to blocking.\n- **Dead letter queues:** Great for poison pills that throw errors, less useful for messages that are just slow.\n\n## A Proxy-Based Approach\n\nThe approach we took with Triage was to insert a proxy layer between Kafka and the consumer application. The proxy maintains ordering guarantees where possible while spinning up additional consumer instances to handle slow messages in parallel. Messages that are identified as poison pills are automatically routed to a dead letter store before they can block the queue.\n\n```\n# Simplified Triage flow\nConsumer <-- Triage Proxy <-- Kafka Broker\n                |\n                +--> Dead Letter Store (poison pills)\n                +--> Parallel Workers (slow messages)\n```\n\nThe key insight is that most messages don't need strict ordering relative to each other \u2014 they just need to be processed. By identifying which messages are genuinely slow versus which are failures, the proxy can make intelligent routing decisions without requiring changes to the consumer application code.\n\n## Takeaways\n\nHead-of-line blocking isn't going away. It's inherent to any ordered processing model. But you can manage it with the right abstractions. The trick is to isolate slow work without sacrificing the delivery guarantees your application depends on.\n");
+      (() => {
+        const markdownSource = "\nIf you've ever operated a Kafka cluster in production, you've probably hit this: one message takes 30 seconds to process, and suddenly your entire partition is backed up. Every message behind it waits, regardless of how trivial they are. This is head-of-line blocking, and it's one of the most common operational headaches in event-driven architectures.\n\n## The Core Problem\n\nKafka guarantees ordering within a partition. That's a feature, not a bug. But it means a single \"poison pill\" message \u2014 one that triggers an exception, hangs on a network call, or just takes an unusually long time \u2014 will block every message queued behind it. In the worst case, your consumer group grinds to a halt and your lag metrics skyrocket.\n\n\u003e The irony of distributed systems: one slow node can make the whole system feel slower than a single node ever would.\n\n## Common Workarounds (and Why They Fall Short)\n\n- **More partitions:** Helps parallelize, but doesn't solve the fundamental issue. A slow message still blocks its partition.\n- **Timeouts and retries:** You can set processing timeouts, but choosing the right value is a guessing game. Too low and you drop legitimate work; too high and you're back to blocking.\n- **Dead letter queues:** Great for poison pills that throw errors, less useful for messages that are just slow.\n\n## A Proxy-Based Approach\n\nThe approach we took with Triage was to insert a proxy layer between Kafka and the consumer application. The proxy maintains ordering guarantees where possible while spinning up additional consumer instances to handle slow messages in parallel. Messages that are identified as poison pills are automatically routed to a dead letter store before they can block the queue.\n\n```\n# Simplified Triage flow\nConsumer \u003c-- Triage Proxy \u003c-- Kafka Broker\n                |\n                +--\u003e Dead Letter Store (poison pills)\n                +--\u003e Parallel Workers (slow messages)\n```\n\nThe key insight is that most messages don't need strict ordering relative to each other \u2014 they just need to be processed. By identifying which messages are genuinely slow versus which are failures, the proxy can make intelligent routing decisions without requiring changes to the consumer application code.\n\n## Takeaways\n\nHead-of-line blocking isn't going away. It's inherent to any ordered processing model. But you can manage it with the right abstractions. The trick is to isolate slow work without sacrificing the delivery guarantees your application depends on.\n";
+
+        function isSafeUrl(urlValue) {
+          if (!urlValue) return false;
+          if (
+            urlValue.startsWith('#') ||
+            urlValue.startsWith('/') ||
+            urlValue.startsWith('./') ||
+            urlValue.startsWith('../')
+          ) return true;
+          try {
+            const parsed = new URL(urlValue, window.location.href);
+            return ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol);
+          } catch {
+            return false;
+          }
+        }
+
+        function sanitizeHtml(inputHtml) {
+          const template = document.createElement('template');
+          template.innerHTML = inputHtml;
+
+          template.content.querySelectorAll('script, iframe, object, embed, meta, link, base, form, style').forEach((node) => {
+            node.remove();
+          });
+
+          template.content.querySelectorAll('*').forEach((element) => {
+            Array.from(element.attributes).forEach((attribute) => {
+              const name = attribute.name.toLowerCase();
+              const value = attribute.value.trim();
+
+              if (name.startsWith('on')) {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'style' || name === 'srcdoc' || name === 'srcset') {
+                element.removeAttribute(attribute.name);
+                return;
+              }
+
+              if (name === 'href' || name === 'src' || name === 'xlink:href') {
+                if (!isSafeUrl(value)) {
+                  element.removeAttribute(attribute.name);
+                }
+              }
+            });
+          });
+
+          return template.innerHTML;
+        }
+
+        const renderedHtml = marked.parse(markdownSource);
+        document.getElementById('post-body').innerHTML = sanitizeHtml(renderedHtml);
+      })();
     </script>
   </body>
 </html>
