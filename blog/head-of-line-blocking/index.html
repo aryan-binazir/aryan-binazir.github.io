@@ -1,169 +1,21 @@
-#!/usr/bin/env bash
-# ─────────────────────────────────────────────
-# build-posts.sh
-# Reads posts/*.md, parses frontmatter, and:
-#   1. Generates blog/<slug>/index.html for each post
-#   2. Generates assets/js/posts-data.js (listing metadata only)
-#
-# Run after adding, editing, or removing a .md file:
-#   ./build-posts.sh
-# ─────────────────────────────────────────────
-set -euo pipefail
-
-DIR="$(cd "$(dirname "$0")" && pwd)"
-POSTS_DIR="$DIR/posts"
-BLOG_DIR="$DIR/blog"
-DATA_OUT="$DIR/assets/js/posts-data.js"
-SITE_URL="https://aryanbinazir.dev"
-
-# ── Slug from filename ──
-make_slug() {
-  local name
-  name="$(basename "$1" .md)"
-  # lowercase, spaces/underscores to hyphens, strip unsafe chars, collapse hyphens
-  echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' _' '-' | sed 's/[^a-z0-9-]//g; s/--*/-/g; s/^-//; s/-$//'
-}
-
-# ── HTML-escape ──
-html_escape() {
-  python3 -c "
-import sys, html
-print(html.escape(sys.stdin.read(), quote=True), end='')
-" <<< "$1"
-}
-
-# ── JSON-escape ──
-json_escape() {
-  printf '%s' "$1" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1], end="")'
-}
-
-# ── Collect posts ──
-files=()
-for f in "$POSTS_DIR"/*.md; do
-  [ -f "$f" ] || continue
-  files+=("$f")
-done
-
-if [ ${#files[@]} -eq 0 ]; then
-  echo "window.POSTS_DATA = [];" > "$DATA_OUT"
-  echo "⚠ No .md files found in posts/"
-  exit 0
-fi
-
-# ── Parse all posts, check for errors and duplicate slugs ──
-declare -A seen_slugs
-all_titles=()
-all_dates=()
-all_tags=()
-all_excerpts=()
-all_slugs=()
-all_bodies=()
-
-for f in "${files[@]}"; do
-  in_fm=0; past_fm=0
-  title=""; date=""; tag=""; excerpt=""; body=""
-
-  while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$past_fm" -eq 0 ] && [ "$line" = "---" ]; then
-      if [ "$in_fm" -eq 0 ]; then in_fm=1; continue; else past_fm=1; continue; fi
-    fi
-    if [ "$in_fm" -eq 1 ] && [ "$past_fm" -eq 0 ]; then
-      key="${line%%:*}"
-      val="${line#*: }"
-      val="${val#\"}" ; val="${val%\"}"
-      val="${val#\'}" ; val="${val%\'}"
-      case "$key" in
-        title)   title="$val" ;;
-        date)    date="$val" ;;
-        tag)     tag="$val" ;;
-        excerpt) excerpt="$val" ;;
-      esac
-      continue
-    fi
-    if [ "$past_fm" -eq 1 ]; then body+="$line"$'\n'; fi
-  done < "$f"
-
-  # Validate required fields
-  fname="$(basename "$f")"
-  missing=""
-  [ -z "$title" ]   && missing+="title "
-  [ -z "$date" ]    && missing+="date "
-  [ -z "$tag" ]     && missing+="tag "
-  [ -z "$excerpt" ] && missing+="excerpt "
-  if [ -n "$missing" ]; then
-    echo "✗ $fname is missing required frontmatter: $missing" >&2
-    exit 1
-  fi
-
-  slug="$(make_slug "$f")"
-  if [ -z "$slug" ]; then
-    echo "✗ $fname produced an empty slug" >&2
-    exit 1
-  fi
-  if [ -n "${seen_slugs[$slug]+x}" ]; then
-    echo "✗ Duplicate slug '$slug' from $fname (conflicts with ${seen_slugs[$slug]})" >&2
-    exit 1
-  fi
-  seen_slugs[$slug]="$fname"
-
-  all_titles+=("$title")
-  all_dates+=("$date")
-  all_tags+=("$tag")
-  all_excerpts+=("$excerpt")
-  all_slugs+=("$slug")
-  all_bodies+=("$body")
-done
-
-# ── Clean old generated blog dirs ──
-if [ -d "$BLOG_DIR" ]; then
-  rm -rf "$BLOG_DIR"
-fi
-mkdir -p "$BLOG_DIR"
-
-# ── Generate pages ──
-for i in "${!all_slugs[@]}"; do
-  slug="${all_slugs[$i]}"
-  title="${all_titles[$i]}"
-  date="${all_dates[$i]}"
-  tag="${all_tags[$i]}"
-  excerpt="${all_excerpts[$i]}"
-  body="${all_bodies[$i]}"
-
-  # Escaped versions for HTML attributes / content
-  title_h="$(html_escape "$title")"
-  excerpt_h="$(html_escape "$excerpt")"
-  tag_h="$(html_escape "$tag")"
-  body_json="$(json_escape "$body")"
-
-  # Format display date
-  display_date="$(python3 -c "
-from datetime import datetime
-d = datetime.strptime('$date', '%Y-%m-%d')
-print(d.strftime('%b %-d, %Y'))
-")"
-
-  post_dir="$BLOG_DIR/$slug"
-  mkdir -p "$post_dir"
-
-  cat > "$post_dir/index.html" <<POSTEOF
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>${title_h} &ndash; Aryan Binazir</title>
+    <title>Why Head-of-Line Blocking Still Haunts Message Queues &ndash; Aryan Binazir</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="${excerpt_h}" />
-    <link rel="canonical" href="${SITE_URL}/blog/${slug}/" />
+    <meta name="description" content="A single slow consumer can stall an entire Kafka partition. Here&#x27;s how we diagnosed the problem at scale and what we built to fix it." />
+    <link rel="canonical" href="https://aryanbinazir.dev/blog/head-of-line-blocking/" />
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="${title_h}" />
-    <meta property="og:description" content="${excerpt_h}" />
-    <meta property="og:url" content="${SITE_URL}/blog/${slug}/" />
-    <meta property="article:published_time" content="${date}" />
+    <meta property="og:title" content="Why Head-of-Line Blocking Still Haunts Message Queues" />
+    <meta property="og:description" content="A single slow consumer can stall an entire Kafka partition. Here&#x27;s how we diagnosed the problem at scale and what we built to fix it." />
+    <meta property="og:url" content="https://aryanbinazir.dev/blog/head-of-line-blocking/" />
+    <meta property="article:published_time" content="2025-01-15" />
     <!-- Twitter -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="${title_h}" />
-    <meta name="twitter:description" content="${excerpt_h}" />
+    <meta name="twitter:title" content="Why Head-of-Line Blocking Still Haunts Message Queues" />
+    <meta name="twitter:description" content="A single slow consumer can stall an entire Kafka partition. Here&#x27;s how we diagnosed the problem at scale and what we built to fix it." />
     <link rel="icon" type="image/x-icon" href="../../images/Favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -299,10 +151,10 @@ print(d.strftime('%b %-d, %Y'))
         <section class="post-header">
           <div class="container">
             <a href="../../blog.html" class="back-link">&larr; All posts</a>
-            <h1>${title_h}</h1>
+            <h1>Why Head-of-Line Blocking Still Haunts Message Queues</h1>
             <div class="post-meta">
-              <span class="post-tag">${tag_h}</span>
-              <time datetime="${date}">${display_date}</time>
+              <span class="post-tag">Infrastructure</span>
+              <time datetime="2025-01-15">Jan 15, 2025</time>
             </div>
           </div>
         </section>
@@ -328,35 +180,7 @@ print(d.strftime('%b %-d, %Y'))
 
     <script src="../../assets/js/marked.min.js"></script>
     <script>
-      document.getElementById('post-body').innerHTML = marked.parse("${body_json}");
+      document.getElementById('post-body').innerHTML = marked.parse("\nIf you've ever operated a Kafka cluster in production, you've probably hit this: one message takes 30 seconds to process, and suddenly your entire partition is backed up. Every message behind it waits, regardless of how trivial they are. This is head-of-line blocking, and it's one of the most common operational headaches in event-driven architectures.\n\n## The Core Problem\n\nKafka guarantees ordering within a partition. That's a feature, not a bug. But it means a single \"poison pill\" message \u2014 one that triggers an exception, hangs on a network call, or just takes an unusually long time \u2014 will block every message queued behind it. In the worst case, your consumer group grinds to a halt and your lag metrics skyrocket.\n\n> The irony of distributed systems: one slow node can make the whole system feel slower than a single node ever would.\n\n## Common Workarounds (and Why They Fall Short)\n\n- **More partitions:** Helps parallelize, but doesn't solve the fundamental issue. A slow message still blocks its partition.\n- **Timeouts and retries:** You can set processing timeouts, but choosing the right value is a guessing game. Too low and you drop legitimate work; too high and you're back to blocking.\n- **Dead letter queues:** Great for poison pills that throw errors, less useful for messages that are just slow.\n\n## A Proxy-Based Approach\n\nThe approach we took with Triage was to insert a proxy layer between Kafka and the consumer application. The proxy maintains ordering guarantees where possible while spinning up additional consumer instances to handle slow messages in parallel. Messages that are identified as poison pills are automatically routed to a dead letter store before they can block the queue.\n\n```\n# Simplified Triage flow\nConsumer <-- Triage Proxy <-- Kafka Broker\n                |\n                +--> Dead Letter Store (poison pills)\n                +--> Parallel Workers (slow messages)\n```\n\nThe key insight is that most messages don't need strict ordering relative to each other \u2014 they just need to be processed. By identifying which messages are genuinely slow versus which are failures, the proxy can make intelligent routing decisions without requiring changes to the consumer application code.\n\n## Takeaways\n\nHead-of-line blocking isn't going away. It's inherent to any ordered processing model. But you can manage it with the right abstractions. The trick is to isolate slow work without sacrificing the delivery guarantees your application depends on.\n");
     </script>
   </body>
 </html>
-POSTEOF
-
-  echo "  ✓ blog/$slug/index.html"
-done
-
-# ── Generate listing data (metadata only, no body) ──
-echo "window.POSTS_DATA = [" > "$DATA_OUT"
-for i in "${!all_slugs[@]}"; do
-  comma=","
-  if [ "$i" -eq $(( ${#all_slugs[@]} - 1 )) ]; then comma=""; fi
-
-  escaped_title="$(json_escape "${all_titles[$i]}")"
-  escaped_excerpt="$(json_escape "${all_excerpts[$i]}")"
-
-  cat >> "$DATA_OUT" <<DATAEOF
-  {
-    "title": "${escaped_title}",
-    "date": "${all_dates[$i]}",
-    "tag": "${all_tags[$i]}",
-    "excerpt": "${escaped_excerpt}",
-    "slug": "${all_slugs[$i]}",
-    "url": "blog/${all_slugs[$i]}/"
-  }${comma}
-DATAEOF
-done
-echo "];" >> "$DATA_OUT"
-
-echo "✓ ${#all_slugs[@]} post(s) built → blog/*/index.html + assets/js/posts-data.js"

@@ -1,169 +1,21 @@
-#!/usr/bin/env bash
-# ─────────────────────────────────────────────
-# build-posts.sh
-# Reads posts/*.md, parses frontmatter, and:
-#   1. Generates blog/<slug>/index.html for each post
-#   2. Generates assets/js/posts-data.js (listing metadata only)
-#
-# Run after adding, editing, or removing a .md file:
-#   ./build-posts.sh
-# ─────────────────────────────────────────────
-set -euo pipefail
-
-DIR="$(cd "$(dirname "$0")" && pwd)"
-POSTS_DIR="$DIR/posts"
-BLOG_DIR="$DIR/blog"
-DATA_OUT="$DIR/assets/js/posts-data.js"
-SITE_URL="https://aryanbinazir.dev"
-
-# ── Slug from filename ──
-make_slug() {
-  local name
-  name="$(basename "$1" .md)"
-  # lowercase, spaces/underscores to hyphens, strip unsafe chars, collapse hyphens
-  echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' _' '-' | sed 's/[^a-z0-9-]//g; s/--*/-/g; s/^-//; s/-$//'
-}
-
-# ── HTML-escape ──
-html_escape() {
-  python3 -c "
-import sys, html
-print(html.escape(sys.stdin.read(), quote=True), end='')
-" <<< "$1"
-}
-
-# ── JSON-escape ──
-json_escape() {
-  printf '%s' "$1" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1], end="")'
-}
-
-# ── Collect posts ──
-files=()
-for f in "$POSTS_DIR"/*.md; do
-  [ -f "$f" ] || continue
-  files+=("$f")
-done
-
-if [ ${#files[@]} -eq 0 ]; then
-  echo "window.POSTS_DATA = [];" > "$DATA_OUT"
-  echo "⚠ No .md files found in posts/"
-  exit 0
-fi
-
-# ── Parse all posts, check for errors and duplicate slugs ──
-declare -A seen_slugs
-all_titles=()
-all_dates=()
-all_tags=()
-all_excerpts=()
-all_slugs=()
-all_bodies=()
-
-for f in "${files[@]}"; do
-  in_fm=0; past_fm=0
-  title=""; date=""; tag=""; excerpt=""; body=""
-
-  while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$past_fm" -eq 0 ] && [ "$line" = "---" ]; then
-      if [ "$in_fm" -eq 0 ]; then in_fm=1; continue; else past_fm=1; continue; fi
-    fi
-    if [ "$in_fm" -eq 1 ] && [ "$past_fm" -eq 0 ]; then
-      key="${line%%:*}"
-      val="${line#*: }"
-      val="${val#\"}" ; val="${val%\"}"
-      val="${val#\'}" ; val="${val%\'}"
-      case "$key" in
-        title)   title="$val" ;;
-        date)    date="$val" ;;
-        tag)     tag="$val" ;;
-        excerpt) excerpt="$val" ;;
-      esac
-      continue
-    fi
-    if [ "$past_fm" -eq 1 ]; then body+="$line"$'\n'; fi
-  done < "$f"
-
-  # Validate required fields
-  fname="$(basename "$f")"
-  missing=""
-  [ -z "$title" ]   && missing+="title "
-  [ -z "$date" ]    && missing+="date "
-  [ -z "$tag" ]     && missing+="tag "
-  [ -z "$excerpt" ] && missing+="excerpt "
-  if [ -n "$missing" ]; then
-    echo "✗ $fname is missing required frontmatter: $missing" >&2
-    exit 1
-  fi
-
-  slug="$(make_slug "$f")"
-  if [ -z "$slug" ]; then
-    echo "✗ $fname produced an empty slug" >&2
-    exit 1
-  fi
-  if [ -n "${seen_slugs[$slug]+x}" ]; then
-    echo "✗ Duplicate slug '$slug' from $fname (conflicts with ${seen_slugs[$slug]})" >&2
-    exit 1
-  fi
-  seen_slugs[$slug]="$fname"
-
-  all_titles+=("$title")
-  all_dates+=("$date")
-  all_tags+=("$tag")
-  all_excerpts+=("$excerpt")
-  all_slugs+=("$slug")
-  all_bodies+=("$body")
-done
-
-# ── Clean old generated blog dirs ──
-if [ -d "$BLOG_DIR" ]; then
-  rm -rf "$BLOG_DIR"
-fi
-mkdir -p "$BLOG_DIR"
-
-# ── Generate pages ──
-for i in "${!all_slugs[@]}"; do
-  slug="${all_slugs[$i]}"
-  title="${all_titles[$i]}"
-  date="${all_dates[$i]}"
-  tag="${all_tags[$i]}"
-  excerpt="${all_excerpts[$i]}"
-  body="${all_bodies[$i]}"
-
-  # Escaped versions for HTML attributes / content
-  title_h="$(html_escape "$title")"
-  excerpt_h="$(html_escape "$excerpt")"
-  tag_h="$(html_escape "$tag")"
-  body_json="$(json_escape "$body")"
-
-  # Format display date
-  display_date="$(python3 -c "
-from datetime import datetime
-d = datetime.strptime('$date', '%Y-%m-%d')
-print(d.strftime('%b %-d, %Y'))
-")"
-
-  post_dir="$BLOG_DIR/$slug"
-  mkdir -p "$post_dir"
-
-  cat > "$post_dir/index.html" <<POSTEOF
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>${title_h} &ndash; Aryan Binazir</title>
+    <title>My Neovim Setup: Building a Development Environment That Stays Out of the Way &ndash; Aryan Binazir</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="${excerpt_h}" />
-    <link rel="canonical" href="${SITE_URL}/blog/${slug}/" />
+    <meta name="description" content="After years of tweaking configs, I&#x27;ve landed on a Neovim + Tmux workflow that balances speed, discoverability, and minimal cognitive overhead." />
+    <link rel="canonical" href="https://aryanbinazir.dev/blog/neovim-setup/" />
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="${title_h}" />
-    <meta property="og:description" content="${excerpt_h}" />
-    <meta property="og:url" content="${SITE_URL}/blog/${slug}/" />
-    <meta property="article:published_time" content="${date}" />
+    <meta property="og:title" content="My Neovim Setup: Building a Development Environment That Stays Out of the Way" />
+    <meta property="og:description" content="After years of tweaking configs, I&#x27;ve landed on a Neovim + Tmux workflow that balances speed, discoverability, and minimal cognitive overhead." />
+    <meta property="og:url" content="https://aryanbinazir.dev/blog/neovim-setup/" />
+    <meta property="article:published_time" content="2024-12-03" />
     <!-- Twitter -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="${title_h}" />
-    <meta name="twitter:description" content="${excerpt_h}" />
+    <meta name="twitter:title" content="My Neovim Setup: Building a Development Environment That Stays Out of the Way" />
+    <meta name="twitter:description" content="After years of tweaking configs, I&#x27;ve landed on a Neovim + Tmux workflow that balances speed, discoverability, and minimal cognitive overhead." />
     <link rel="icon" type="image/x-icon" href="../../images/Favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="../../images/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -299,10 +151,10 @@ print(d.strftime('%b %-d, %Y'))
         <section class="post-header">
           <div class="container">
             <a href="../../blog.html" class="back-link">&larr; All posts</a>
-            <h1>${title_h}</h1>
+            <h1>My Neovim Setup: Building a Development Environment That Stays Out of the Way</h1>
             <div class="post-meta">
-              <span class="post-tag">${tag_h}</span>
-              <time datetime="${date}">${display_date}</time>
+              <span class="post-tag">Dev Tools</span>
+              <time datetime="2024-12-03">Dec 3, 2024</time>
             </div>
           </div>
         </section>
@@ -328,35 +180,7 @@ print(d.strftime('%b %-d, %Y'))
 
     <script src="../../assets/js/marked.min.js"></script>
     <script>
-      document.getElementById('post-body').innerHTML = marked.parse("${body_json}");
+      document.getElementById('post-body').innerHTML = marked.parse("\nI've used a lot of editors. VS Code, Sublime, IntelliJ, Emacs for a painful month. I kept coming back to Vim. Not because it's the \"best\" editor \u2014 that argument is exhausting \u2014 but because it maps closest to how I think about editing text: as a series of composable operations.\n\n## Why Neovim Over Vim\n\nNeovim gave me two things I couldn't get from Vim: Lua-based configuration and a built-in LSP client. Lua configs are just easier to reason about than Vimscript, and native LSP means I get IDE-grade completions, go-to-definition, and diagnostics without a heavy plugin framework.\n\n## The Plugin Stack\n\nI keep it lean. Every plugin has to earn its place:\n\n- `telescope.nvim` \u2014 fuzzy finder for files, grep, LSP symbols\n- `treesitter` \u2014 syntax highlighting that actually understands the AST\n- `nvim-lspconfig` \u2014 LSP configs for Go, Python, TypeScript, Lua\n- `oil.nvim` \u2014 file explorer that feels like editing a buffer\n- `harpoon` \u2014 quick-switch between a handful of key files\n\n## Tmux Integration\n\nNeovim handles code. Tmux handles everything else. I run tests in a split pane, keep a persistent session for each project, and use `tmux-sessionizer` to jump between projects in under a second. The combination means I almost never touch a mouse, and context-switching between projects has near-zero friction.\n\n```bash\n# Quick project switch\nbind-key -r f run-shell \"tmux neww ~/scripts/tmux-sessionizer\"\n\n# Split and run tests\nbind-key -r T split-window -h \"cd #{pane_current_path} && go test ./...\"\n```\n\n## The Philosophy\n\nThe best development environment is the one you stop noticing. If you're spending more time configuring your editor than writing code, something's wrong. I aim for a setup that's fast to start, predictable in behavior, and invisible when I'm in flow.\n");
     </script>
   </body>
 </html>
-POSTEOF
-
-  echo "  ✓ blog/$slug/index.html"
-done
-
-# ── Generate listing data (metadata only, no body) ──
-echo "window.POSTS_DATA = [" > "$DATA_OUT"
-for i in "${!all_slugs[@]}"; do
-  comma=","
-  if [ "$i" -eq $(( ${#all_slugs[@]} - 1 )) ]; then comma=""; fi
-
-  escaped_title="$(json_escape "${all_titles[$i]}")"
-  escaped_excerpt="$(json_escape "${all_excerpts[$i]}")"
-
-  cat >> "$DATA_OUT" <<DATAEOF
-  {
-    "title": "${escaped_title}",
-    "date": "${all_dates[$i]}",
-    "tag": "${all_tags[$i]}",
-    "excerpt": "${escaped_excerpt}",
-    "slug": "${all_slugs[$i]}",
-    "url": "blog/${all_slugs[$i]}/"
-  }${comma}
-DATAEOF
-done
-echo "];" >> "$DATA_OUT"
-
-echo "✓ ${#all_slugs[@]} post(s) built → blog/*/index.html + assets/js/posts-data.js"
