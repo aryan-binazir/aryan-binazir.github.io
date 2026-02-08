@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build static blog pages and metadata from posts/*.md.
+"""Build static findings pages and metadata from posts/*.md.
 
 Frontmatter format is intentionally strict and line-oriented:
 - opening delimiter on the first line: ---
@@ -239,8 +239,8 @@ def parse_post(path: Path) -> ParsedPost:
     )
 
 
-def cleanup_generated_blog_dirs(blog_dir: Path, manifest_file: Path, keep_slugs: set[str]) -> None:
-    blog_dir.mkdir(parents=True, exist_ok=True)
+def cleanup_generated_findings_dirs(findings_dir: Path, manifest_file: Path, keep_slugs: set[str]) -> None:
+    findings_dir.mkdir(parents=True, exist_ok=True)
 
     if manifest_file.exists():
         try:
@@ -256,11 +256,11 @@ def cleanup_generated_blog_dirs(blog_dir: Path, manifest_file: Path, keep_slugs:
                 continue
             if not SLUG_RE.fullmatch(old_slug):
                 continue
-            old_dir = blog_dir / old_slug
+            old_dir = findings_dir / old_slug
             if old_dir.is_dir():
                 shutil.rmtree(old_dir)
 
-    for child in blog_dir.iterdir():
+    for child in findings_dir.iterdir():
         if not child.is_dir():
             continue
         slug = child.name
@@ -298,12 +298,12 @@ def render_post_html(post: ParsedPost) -> str:
         "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />",
         "    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; object-src 'none'; base-uri 'self'\" />",
         f"    <meta name=\"description\" content=\"{excerpt_h}\" />",
-        f"    <link rel=\"canonical\" href=\"{SITE_URL}/blog/{post.slug}/\" />",
+        f"    <link rel=\"canonical\" href=\"{SITE_URL}/findings/{post.slug}/\" />",
         "    <!-- Open Graph -->",
         "    <meta property=\"og:type\" content=\"article\" />",
         f"    <meta property=\"og:title\" content=\"{title_h}\" />",
         f"    <meta property=\"og:description\" content=\"{excerpt_h}\" />",
-        f"    <meta property=\"og:url\" content=\"{SITE_URL}/blog/{post.slug}/\" />",
+        f"    <meta property=\"og:url\" content=\"{SITE_URL}/findings/{post.slug}/\" />",
         f"    <meta property=\"article:published_time\" content=\"{post.date_iso}\" />",
         "    <!-- Twitter -->",
         "    <meta name=\"twitter:card\" content=\"summary\" />",
@@ -319,7 +319,7 @@ def render_post_html(post: ParsedPost) -> str:
         "    />",
         "    <link rel=\"stylesheet\" href=\"../../assets/css/fontawesome-all.min.css\" />",
         "    <link rel=\"stylesheet\" href=\"../../assets/css/site-shared.css\" />",
-        "    <link rel=\"stylesheet\" href=\"../../assets/css/blog-post.css\" />",
+        "    <link rel=\"stylesheet\" href=\"../../assets/css/findings-post.css\" />",
         "  </head>",
         "  <body class=\"site\">",
         "    <div class=\"page\">",
@@ -328,7 +328,7 @@ def render_post_html(post: ParsedPost) -> str:
         "          <a href=\"../../index.html\" class=\"header-brand\">Aryan Binazir</a>",
         "          <div class=\"header-right\">",
         "            <nav class=\"text-nav\" aria-label=\"Main navigation\">",
-        "              <a href=\"../../blog.html\" class=\"active\">Findings</a>",
+        "              <a href=\"../../findings.html\" class=\"active\">Findings</a>",
         "              <a href=\"../../index.html#triage\">Triage</a>",
         "              <a href=\"../../index.html#projects\">Projects</a>",
         "            </nav>",
@@ -346,7 +346,7 @@ def render_post_html(post: ParsedPost) -> str:
         "      <main>",
         "        <section class=\"post-header\">",
         "          <div class=\"container\">",
-        "            <a href=\"../../blog.html\" class=\"back-link\">&larr; All posts</a>",
+        "            <a href=\"../../findings.html\" class=\"back-link\">&larr; All posts</a>",
         f"            <h1>{title_h}</h1>",
         "            <div class=\"post-meta\">",
         f"              <span class=\"post-tag\">{tag_h}</span>",
@@ -377,7 +377,7 @@ def render_post_html(post: ParsedPost) -> str:
         "",
         "    <script src=\"../../assets/js/marked.min.js\"></script>",
         "    <script src=\"../../assets/js/markdown-renderer.js\"></script>",
-        "    <script src=\"../../assets/js/blog-post-page.js\"></script>",
+        "    <script src=\"../../assets/js/findings-post-page.js\"></script>",
         "  </body>",
         "</html>",
         "",
@@ -393,7 +393,7 @@ def write_posts_data(posts: Iterable[ParsedPost], destination: Path) -> None:
             "tag": post.tag,
             "excerpt": post.excerpt,
             "slug": post.slug,
-            "url": f"blog/{post.slug}/index.html",
+            "url": f"findings/{post.slug}/index.html",
         }
         for post in posts
     ]
@@ -419,9 +419,9 @@ def collect_posts(posts_dir: Path) -> list[Path]:
 
 def build(root: Path) -> int:
     posts_dir = root / "posts"
-    blog_dir = root / "blog"
+    findings_dir = root / "findings"
     data_out = root / "assets" / "js" / "posts-data.js"
-    manifest_file = blog_dir / MANIFEST_FILENAME
+    manifest_file = findings_dir / MANIFEST_FILENAME
 
     source_files = collect_posts(posts_dir)
 
@@ -442,38 +442,38 @@ def build(root: Path) -> int:
     keep_slugs = {post.slug for post in published_posts}
 
     if not source_files:
-        cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
+        cleanup_generated_findings_dirs(findings_dir, manifest_file, keep_slugs)
         write_manifest(manifest_file, [])
         write_posts_data([], data_out)
         print("⚠ No .md files found in posts/")
         return 0
 
     if not published_posts:
-        cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
+        cleanup_generated_findings_dirs(findings_dir, manifest_file, keep_slugs)
         write_manifest(manifest_file, [])
         write_posts_data([], data_out)
         print("⚠ No published posts (all posts have published: false)")
         return 0
 
     for post in published_posts:
-        post_dir = blog_dir / post.slug
+        post_dir = findings_dir / post.slug
         post_dir.mkdir(parents=True, exist_ok=True)
         (post_dir / "index.html").write_text(render_post_html(post), encoding="utf-8")
-        print(f"  ✓ blog/{post.slug}/index.html")
+        print(f"  ✓ findings/{post.slug}/index.html")
 
-    cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
+    cleanup_generated_findings_dirs(findings_dir, manifest_file, keep_slugs)
     write_manifest(manifest_file, [post.slug for post in published_posts])
     write_posts_data(published_posts, data_out)
 
     print(
         f"✓ {len(published_posts)} post(s) built → "
-        "blog/*/index.html + assets/js/posts-data.js"
+        "findings/*/index.html + assets/js/posts-data.js"
     )
     return 0
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build static blog pages from markdown posts.")
+    parser = argparse.ArgumentParser(description="Build static findings pages from markdown posts.")
     parser.add_argument(
         "--root",
         default=None,

@@ -1,4 +1,4 @@
-(function initBlogPostPage(globalScope) {
+(function initFindingsPostPage(globalScope) {
   'use strict';
 
   function readMarkdownSource() {

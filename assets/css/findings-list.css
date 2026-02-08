@@ -2,11 +2,11 @@ section[id] {
   scroll-margin-top: var(--scroll-offset);
 }
 
-.blog-hero {
+.findings-hero {
   padding: clamp(3rem, 6vw, 5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
 }
 
-.blog-hero h1 {
+.findings-hero h1 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(2.2rem, 4vw, 3.6rem);
   line-height: 1.1;
@@ -14,13 +14,13 @@ section[id] {
   margin-bottom: 0.6rem;
 }
 
-.blog-hero p {
+.findings-hero p {
   color: var(--muted);
   font-size: clamp(1rem, 1.1vw, 1.15rem);
   max-width: 52ch;
 }
 
-.blog-posts {
+.findings-posts {
   padding: 0 0 clamp(4rem, 7vw, 6rem);
 }
 

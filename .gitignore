@@ -2,7 +2,7 @@ node_modules
 .DS_Store
 dist-ssr
 *.local
-blog/.generated-post-slugs
+findings/.generated-post-slugs
 __pycache__/
 *.pyc
 
