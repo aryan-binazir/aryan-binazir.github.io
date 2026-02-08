@@ -245,6 +245,10 @@
         align-items: center;
         gap: 0.4rem;
         margin-top: 1rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        font: inherit;
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--accent-2);
@@ -505,37 +509,147 @@
       (() => {
         const listEl = document.getElementById('posts-list');
         const posts = (window.POSTS_DATA || []).slice();
+        const postBodiesById = new Map();
 
-        // ── Format date for display ──
+        function toDateKey(dateStr) {
+          if (!dateStr) return 0;
+          const date = new Date(dateStr + 'T00:00:00');
+          return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+        }
+
         function formatDate(dateStr) {
-          const d = new Date(dateStr + 'T00:00:00');
-          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          if (!dateStr) return 'Unknown date';
+          const date = new Date(dateStr + 'T00:00:00');
+          if (Number.isNaN(date.getTime())) return 'Unknown date';
+          return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          });
+        }
+
+        function isSafeUrl(url, allowMailto) {
+          if (!url) return false;
+          const normalized = url.trim().replace(/[\u0000-\u001F\u007F\s]+/g, '');
+          if (!normalized) return false;
+          if (normalized.startsWith('#') || normalized.startsWith('/')) return true;
+
+          try {
+            const parsed = new URL(normalized, window.location.origin);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return true;
+            if (allowMailto && parsed.protocol === 'mailto:') return true;
+            return false;
+          } catch {
+            return false;
+          }
+        }
+
+        function sanitizeHtml(html) {
+          const template = document.createElement('template');
+          template.innerHTML = html;
+          const blockedTags = [
+            'script',
+            'style',
+            'iframe',
+            'object',
+            'embed',
+            'link',
+            'meta',
+            'base',
+            'form',
+            'input',
+            'button',
+            'textarea',
+            'select',
+            'option'
+          ];
+
+          template.content.querySelectorAll(blockedTags.join(',')).forEach(el => el.remove());
+
+          const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_ELEMENT);
+          let current = walker.currentNode;
+          while (current) {
+            const attrs = Array.from(current.attributes || []);
+            attrs.forEach(attr => {
+              const name = attr.name.toLowerCase();
+              const value = attr.value;
+
+              if (name.startsWith('on') || name === 'style') {
+                current.removeAttribute(attr.name);
+                return;
+              }
+
+              if (name === 'href' && !isSafeUrl(value, true)) {
+                current.removeAttribute(attr.name);
+                return;
+              }
+
+              if ((name === 'src' || name === 'xlink:href' || name === 'formaction') && !isSafeUrl(value, false)) {
+                current.removeAttribute(attr.name);
+              }
+            });
+
+            current = walker.nextNode();
+          }
+
+          return template.innerHTML;
         }
 
         // Sort by date descending
-        posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        posts.sort((a, b) => toDateKey(b.date) - toDateKey(a.date));
 
         posts.forEach((post, i) => {
           const id = 'post-' + i;
           const delay = (0.05 + i * 0.07).toFixed(2);
-          const bodyHtml = marked.parse(post.body);
+          postBodiesById.set(id, post.body || '');
 
           const article = document.createElement('article');
           article.className = 'post-card';
           article.setAttribute('data-reveal', '');
           article.style.setProperty('--delay', delay + 's');
 
-          article.innerHTML =
-            '<div class="post-meta">' +
-              '<span class="post-tag">' + (post.tag || 'General') + '</span>' +
-              '<time datetime="' + (post.date || '') + '">' + formatDate(post.date) + '</time>' +
-            '</div>' +
-            '<h2>' + (post.title || 'Untitled') + '</h2>' +
-            '<p class="post-excerpt">' + (post.excerpt || '') + '</p>' +
-            '<span class="read-more" data-target="' + id + '">Read more &rarr;</span>' +
-            '<div class="post-full" id="' + id + '">' +
-              '<div class="post-body">' + bodyHtml + '</div>' +
-            '</div>';
+          const meta = document.createElement('div');
+          meta.className = 'post-meta';
+
+          const tag = document.createElement('span');
+          tag.className = 'post-tag';
+          tag.textContent = post.tag || 'General';
+
+          const time = document.createElement('time');
+          const safeDate = post.date || '';
+          time.setAttribute('datetime', safeDate);
+          time.textContent = formatDate(post.date);
+
+          meta.appendChild(tag);
+          meta.appendChild(time);
+
+          const title = document.createElement('h2');
+          title.textContent = post.title || 'Untitled';
+
+          const excerpt = document.createElement('p');
+          excerpt.className = 'post-excerpt';
+          excerpt.textContent = post.excerpt || '';
+
+          const toggle = document.createElement('button');
+          toggle.className = 'read-more';
+          toggle.type = 'button';
+          toggle.setAttribute('data-target', id);
+          toggle.textContent = 'Read more ->';
+
+          const full = document.createElement('div');
+          full.className = 'post-full';
+          full.id = id;
+          full.setAttribute('data-rendered', 'false');
+
+          const body = document.createElement('div');
+          body.className = 'post-body';
+          full.appendChild(body);
+
+          article.appendChild(meta);
+          article.appendChild(title);
+          article.appendChild(excerpt);
+          article.appendChild(toggle);
+          article.appendChild(full);
 
           listEl.appendChild(article);
         });
@@ -563,10 +677,23 @@
           const targetId = toggle.getAttribute('data-target');
           const full = document.getElementById(targetId);
           if (!full) return;
+
+          const shouldOpen = !full.classList.contains('is-open');
+          if (shouldOpen && full.getAttribute('data-rendered') !== 'true') {
+            const source = postBodiesById.get(targetId) || '';
+            const parsed = marked.parse(source);
+            const sanitized = sanitizeHtml(parsed);
+            const body = full.querySelector('.post-body');
+            if (body) {
+              body.innerHTML = sanitized;
+            }
+            full.setAttribute('data-rendered', 'true');
+          }
+
           full.classList.toggle('is-open');
-          toggle.innerHTML = full.classList.contains('is-open')
-            ? 'Read less &larr;'
-            : 'Read more &rarr;';
+          toggle.textContent = full.classList.contains('is-open')
+            ? 'Read less <-'
+            : 'Read more ->';
         });
       })();
     </script>

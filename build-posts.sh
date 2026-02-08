@@ -75,9 +75,16 @@ for i in "${!files[@]}"; do
     fi
   done < "$f"
 
+  if [ "$in_frontmatter" -eq 0 ] || [ "$past_frontmatter" -eq 0 ]; then
+    echo "Error: missing or malformed frontmatter in $f" >&2
+    exit 1
+  fi
+
   # JSON-escape the body: backslashes, quotes, newlines, tabs
   escaped_body=$(printf '%s' "$body" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
   escaped_title=$(printf '%s' "$title" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
+  escaped_date=$(printf '%s' "$date" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
+  escaped_tag=$(printf '%s' "$tag" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
   escaped_excerpt=$(printf '%s' "$excerpt" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read())[1:-1])')
 
   comma=","
@@ -88,8 +95,8 @@ for i in "${!files[@]}"; do
   cat >> "$OUT" <<ENTRY
   {
     "title": "${escaped_title}",
-    "date": "${date}",
-    "tag": "${tag}",
+    "date": "${escaped_date}",
+    "tag": "${escaped_tag}",
     "excerpt": "${escaped_excerpt}",
     "body": "${escaped_body}"
   }${comma}
