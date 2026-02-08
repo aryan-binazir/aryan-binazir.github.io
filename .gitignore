@@ -3,6 +3,8 @@ node_modules
 dist-ssr
 *.local
 blog/.generated-post-slugs
+__pycache__/
+*.pyc
 
 # Ignore generated binary artifacts outside approved static-asset directories.
 *.7z

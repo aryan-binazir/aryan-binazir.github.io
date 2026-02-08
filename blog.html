@@ -211,20 +211,10 @@
           listEl.appendChild(article);
         });
 
-        // Reveal observer for dynamically added cards
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const revealItems = listEl.querySelectorAll('[data-reveal]');
-        if (prefersReduced) {
-          revealItems.forEach(el => el.classList.add('is-visible'));
+        if (typeof window.applyReveal === 'function') {
+          window.applyReveal(listEl);
         } else {
-          const observer = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-              if (!entry.isIntersecting) return;
-              entry.target.classList.add('is-visible');
-              obs.unobserve(entry.target);
-            });
-          }, { threshold: 0.2 });
-          revealItems.forEach(el => observer.observe(el));
+          listEl.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
         }
       })();
     </script>
