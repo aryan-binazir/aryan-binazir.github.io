@@ -328,7 +328,7 @@ def render_post_html(post: ParsedPost) -> str:
         "          <a href=\"../../index.html\" class=\"header-brand\">Aryan Binazir</a>",
         "          <div class=\"header-right\">",
         "            <nav class=\"text-nav\" aria-label=\"Main navigation\">",
-        "              <a href=\"../../blog.html\" class=\"active\">Blog</a>",
+        "              <a href=\"../../blog.html\" class=\"active\">Findings</a>",
         "              <a href=\"../../index.html#triage\">Triage</a>",
         "              <a href=\"../../index.html#projects\">Projects</a>",
         "            </nav>",
