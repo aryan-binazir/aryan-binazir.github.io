@@ -28,7 +28,7 @@
     template.innerHTML = inputHtml;
 
     template.content
-      .querySelectorAll('script, iframe, object, embed, meta, link, base, form, style, svg, math, use')
+      .querySelectorAll('script, iframe, object, embed, meta, link, base, form, style, svg, math, use, noscript, template, audio, video, slot, noembed')
       .forEach(function removeDisallowed(node) {
         node.remove();
       });
@@ -38,7 +38,7 @@
         var name = attribute.name.toLowerCase();
         var value = attribute.value.trim();
 
-        if (name.startsWith('on') || name === 'style' || name === 'srcdoc' || name === 'srcset') {
+        if (name.startsWith('on') || name === 'style' || name === 'srcdoc' || name === 'srcset' || name === 'formaction' || name === 'is') {
           element.removeAttribute(attribute.name);
           return;
         }
@@ -56,7 +56,7 @@
       });
     });
 
-    return template.innerHTML;
+    return template.content;
   }
 
   function renderMarkdownInto(options) {
@@ -77,7 +77,9 @@
     }
 
     var renderedHtml = globalScope.marked.parse(String(markdownSource || ''));
-    target.innerHTML = sanitizeHtml(renderedHtml);
+    var sanitizedFragment = sanitizeHtml(renderedHtml);
+    target.textContent = '';
+    target.appendChild(sanitizedFragment);
   }
 
   globalScope.renderMarkdownInto = renderMarkdownInto;

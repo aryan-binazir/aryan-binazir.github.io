@@ -18,6 +18,7 @@ Supported keys:
 from __future__ import annotations
 
 import argparse
+import calendar
 import html
 import json
 import re
@@ -31,7 +32,6 @@ from typing import Iterable
 SITE_URL = "https://aryanbinazir.dev"
 GENERATED_MARKER = "GENERATED_BY_BUILD_POSTS_SH"
 MANIFEST_FILENAME = ".generated-post-slugs"
-MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 DATE_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 MULTILINE_MARKERS = {"|", ">", "|-", "|+", ">-", ">+"}
@@ -133,12 +133,15 @@ def parse_display_date(date_value: str, source_name: str) -> str:
         dt = datetime.strptime(date_value, "%Y-%m-%d")
     except ValueError:
         raise BuildError(f"✗ {source_name} has invalid calendar date '{date_value}'")
-    return f"{MONTHS[dt.month - 1]} {dt.day}, {dt.year}"
+    return f"{calendar.month_abbr[dt.month]} {dt.day}, {dt.year}"
 
 
 def parse_post(path: Path) -> ParsedPost:
     source_name = path.name
-    raw = path.read_text(encoding="utf-8")
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise BuildError(f"✗ {source_name} has invalid UTF-8 encoding: {exc}") from exc
     lines = raw.splitlines(keepends=True)
 
     if not lines or lines[0].rstrip("\r\n") != "---":
@@ -191,7 +194,7 @@ def parse_post(path: Path) -> ParsedPost:
             published = parse_boolean(value, source_name, idx, key)
             continue
 
-    missing = [name for name, val in values.items() if not val]
+    missing = [name for name, val in values.items() if not val.strip()]
     if missing:
         missing_fields = " ".join(missing)
         raise BuildError(f"✗ {source_name} is missing required frontmatter: {missing_fields}")
@@ -222,7 +225,12 @@ def cleanup_generated_blog_dirs(blog_dir: Path, manifest_file: Path, keep_slugs:
     blog_dir.mkdir(parents=True, exist_ok=True)
 
     if manifest_file.exists():
-        for old_slug in manifest_file.read_text(encoding="utf-8").splitlines():
+        try:
+            manifest_lines = manifest_file.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError) as exc:
+            print(f"⚠ Could not read manifest {manifest_file}: {exc}", file=sys.stderr)
+            manifest_lines = []
+        for old_slug in manifest_lines:
             old_slug = old_slug.strip()
             if not old_slug:
                 continue
@@ -270,6 +278,7 @@ def render_post_html(post: ParsedPost) -> str:
         f"    <title>{title_h} &ndash; Aryan Binazir</title>",
         "    <meta charset=\"utf-8\" />",
         "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />",
+        "    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'\" />",
         f"    <meta name=\"description\" content=\"{excerpt_h}\" />",
         f"    <link rel=\"canonical\" href=\"{SITE_URL}/blog/{post.slug}/\" />",
         "    <!-- Open Graph -->",
@@ -392,6 +401,8 @@ def write_manifest(manifest_file: Path, slugs: Iterable[str]) -> None:
 
 
 def collect_posts(posts_dir: Path) -> list[Path]:
+    if not posts_dir.is_dir():
+        raise BuildError(f"✗ Posts directory not found: {posts_dir}")
     return sorted(path for path in posts_dir.glob("*.md") if path.is_file())
 
 
@@ -419,15 +430,15 @@ def build(root: Path) -> int:
     published_posts = [post for post in parsed_posts if post.published]
     keep_slugs = {post.slug for post in published_posts}
 
-    cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
-
     if not source_files:
+        cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
         write_manifest(manifest_file, [])
         write_posts_data([], data_out)
         print("⚠ No .md files found in posts/")
         return 0
 
     if not published_posts:
+        cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
         write_manifest(manifest_file, [])
         write_posts_data([], data_out)
         print("⚠ No published posts (all posts have published: false)")
@@ -439,6 +450,7 @@ def build(root: Path) -> int:
         (post_dir / "index.html").write_text(render_post_html(post), encoding="utf-8")
         print(f"  ✓ blog/{post.slug}/index.html")
 
+    cleanup_generated_blog_dirs(blog_dir, manifest_file, keep_slugs)
     write_manifest(manifest_file, [post.slug for post in published_posts])
     write_posts_data(published_posts, data_out)
 

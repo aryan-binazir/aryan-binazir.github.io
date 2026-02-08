@@ -35,17 +35,6 @@
   color: var(--muted);
 }
 
-.post-tag {
-  display: inline-block;
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--accent-2);
-}
-
 .post-content {
   padding: 0 0 clamp(4rem, 7vw, 6rem);
 }
