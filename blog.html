@@ -16,6 +16,7 @@
     <style>
       /* ═══════════════════════════════════════════
          Blog page – mirrors index.html design
+         Posts loaded dynamically from posts/*.md
          ═══════════════════════════════════════════ */
 
       :root {
@@ -232,12 +233,6 @@
         letter-spacing: -0.01em;
         margin-bottom: 0.6rem;
       }
-      .post-card h2 a {
-        transition: color 0.2s;
-      }
-      .post-card h2 a:hover {
-        color: var(--accent-2);
-      }
 
       .post-excerpt {
         color: var(--muted);
@@ -253,6 +248,7 @@
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--accent-2);
+        cursor: pointer;
         transition: color 0.2s, gap 0.2s;
       }
       .read-more:hover {
@@ -260,7 +256,7 @@
         gap: 0.6rem;
       }
 
-      /* ═════════════════ SINGLE POST (inline) ═════════════════ */
+      /* ═════════════════ EXPANDED POST BODY ═════════════════ */
       .post-full {
         display: none;
         padding: clamp(1.5rem, 3vw, 2rem) 0 0;
@@ -277,14 +273,20 @@
         line-height: 1.75;
         max-width: 72ch;
       }
-      .post-body h3 {
+      .post-body h2 {
         font-family: 'Space Grotesk', sans-serif;
         color: var(--ink);
         font-size: 1.25rem;
         margin: 1.8rem 0 0.6rem;
       }
-      .post-body p + p {
-        margin-top: 1rem;
+      .post-body h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--ink);
+        font-size: 1.1rem;
+        margin: 1.4rem 0 0.5rem;
+      }
+      .post-body p {
+        margin: 0.8rem 0;
       }
       .post-body code {
         background: var(--panel);
@@ -309,12 +311,14 @@
         font-size: 0.86rem;
         color: var(--ink);
       }
-      .post-body ul {
+      .post-body ul,
+      .post-body ol {
         list-style: disc;
         padding-left: 1.5rem;
         margin: 0.8rem 0;
       }
-      .post-body ul li {
+      .post-body ol { list-style: decimal; }
+      .post-body li {
         margin-bottom: 0.4rem;
       }
       .post-body blockquote {
@@ -325,6 +329,19 @@
         border-radius: 0 12px 12px 0;
         font-style: italic;
         color: var(--ink);
+      }
+      .post-body a {
+        color: var(--accent-2);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .post-body a:hover {
+        color: var(--accent);
+      }
+      .post-body hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 2rem 0;
       }
 
       /* ═════════════════ FOOTER ═════════════════ */
@@ -433,222 +450,10 @@
           </div>
         </section>
 
-        <!-- ── POSTS ── -->
+        <!-- ── POSTS (populated by JS from posts/*.md) ── -->
         <section class="blog-posts">
           <div class="container">
-            <div class="posts-list">
-
-              <!-- ── POST 1 ── -->
-              <article class="post-card" data-reveal style="--delay: 0.05s">
-                <div class="post-meta">
-                  <span class="post-tag">Infrastructure</span>
-                  <time datetime="2025-01-15">Jan 15, 2025</time>
-                </div>
-                <h2><a href="#post-1" class="post-toggle">Why Head-of-Line Blocking Still Haunts Message Queues</a></h2>
-                <p class="post-excerpt">
-                  A single slow consumer can stall an entire Kafka partition. Here's how
-                  we diagnosed the problem at scale and what we built to fix it.
-                </p>
-                <a href="#post-1" class="read-more post-toggle">Read more &rarr;</a>
-                <div class="post-full" id="post-1">
-                  <div class="post-body">
-                    <p>
-                      If you've ever operated a Kafka cluster in production, you've probably hit
-                      this: one message takes 30 seconds to process, and suddenly your entire
-                      partition is backed up. Every message behind it waits, regardless of how
-                      trivial they are. This is head-of-line blocking, and it's one of the most
-                      common operational headaches in event-driven architectures.
-                    </p>
-                    <h3>The Core Problem</h3>
-                    <p>
-                      Kafka guarantees ordering within a partition. That's a feature, not a bug.
-                      But it means a single "poison pill" message &mdash; one that triggers an
-                      exception, hangs on a network call, or just takes an unusually long time
-                      &mdash; will block every message queued behind it. In the worst case, your
-                      consumer group grinds to a halt and your lag metrics skyrocket.
-                    </p>
-                    <blockquote>
-                      The irony of distributed systems: one slow node can make
-                      the whole system feel slower than a single node ever would.
-                    </blockquote>
-                    <h3>Common Workarounds (and Why They Fall Short)</h3>
-                    <ul>
-                      <li><strong>More partitions:</strong> Helps parallelize, but doesn't solve the fundamental issue. A slow message still blocks its partition.</li>
-                      <li><strong>Timeouts and retries:</strong> You can set processing timeouts, but choosing the right value is a guessing game. Too low and you drop legitimate work; too high and you're back to blocking.</li>
-                      <li><strong>Dead letter queues:</strong> Great for poison pills that throw errors, less useful for messages that are just slow.</li>
-                    </ul>
-                    <h3>A Proxy-Based Approach</h3>
-                    <p>
-                      The approach we took with Triage was to insert a proxy layer between Kafka
-                      and the consumer application. The proxy maintains ordering guarantees where
-                      possible while spinning up additional consumer instances to handle slow
-                      messages in parallel. Messages that are identified as poison pills are
-                      automatically routed to a dead letter store before they can block the queue.
-                    </p>
-                    <pre><code># Simplified Triage flow
-Consumer &lt;-- Triage Proxy &lt;-- Kafka Broker
-                |
-                +--> Dead Letter Store (poison pills)
-                +--> Parallel Workers (slow messages)</code></pre>
-                    <p>
-                      The key insight is that most messages don't need strict ordering relative
-                      to each other &mdash; they just need to be processed. By identifying which
-                      messages are genuinely slow versus which are failures, the proxy can make
-                      intelligent routing decisions without requiring changes to the consumer
-                      application code.
-                    </p>
-                    <h3>Takeaways</h3>
-                    <p>
-                      Head-of-line blocking isn't going away. It's inherent to any ordered
-                      processing model. But you can manage it with the right abstractions.
-                      The trick is to isolate slow work without sacrificing the delivery
-                      guarantees your application depends on.
-                    </p>
-                  </div>
-                </div>
-              </article>
-
-              <!-- ── POST 2 ── -->
-              <article class="post-card" data-reveal style="--delay: 0.12s">
-                <div class="post-meta">
-                  <span class="post-tag">Dev Tools</span>
-                  <time datetime="2024-12-03">Dec 3, 2024</time>
-                </div>
-                <h2><a href="#post-2" class="post-toggle">My Neovim Setup: Building a Development Environment That Stays Out of the Way</a></h2>
-                <p class="post-excerpt">
-                  After years of tweaking configs, I've landed on a Neovim + Tmux workflow
-                  that balances speed, discoverability, and minimal cognitive overhead.
-                </p>
-                <a href="#post-2" class="read-more post-toggle">Read more &rarr;</a>
-                <div class="post-full" id="post-2">
-                  <div class="post-body">
-                    <p>
-                      I've used a lot of editors. VS Code, Sublime, IntelliJ, Emacs for a
-                      painful month. I kept coming back to Vim. Not because it's the "best"
-                      editor &mdash; that argument is exhausting &mdash; but because it maps
-                      closest to how I think about editing text: as a series of composable
-                      operations.
-                    </p>
-                    <h3>Why Neovim Over Vim</h3>
-                    <p>
-                      Neovim gave me two things I couldn't get from Vim: Lua-based configuration
-                      and a built-in LSP client. Lua configs are just easier to reason about
-                      than Vimscript, and native LSP means I get IDE-grade completions, go-to-definition,
-                      and diagnostics without a heavy plugin framework.
-                    </p>
-                    <h3>The Plugin Stack</h3>
-                    <p>
-                      I keep it lean. Every plugin has to earn its place:
-                    </p>
-                    <ul>
-                      <li><code>telescope.nvim</code> &mdash; fuzzy finder for files, grep, LSP symbols</li>
-                      <li><code>treesitter</code> &mdash; syntax highlighting that actually understands the AST</li>
-                      <li><code>nvim-lspconfig</code> &mdash; LSP configs for Go, Python, TypeScript, Lua</li>
-                      <li><code>oil.nvim</code> &mdash; file explorer that feels like editing a buffer</li>
-                      <li><code>harpoon</code> &mdash; quick-switch between a handful of key files</li>
-                    </ul>
-                    <h3>Tmux Integration</h3>
-                    <p>
-                      Neovim handles code. Tmux handles everything else. I run tests in a
-                      split pane, keep a persistent session for each project, and use
-                      <code>tmux-sessionizer</code> to jump between projects in under a second.
-                      The combination means I almost never touch a mouse, and context-switching
-                      between projects has near-zero friction.
-                    </p>
-                    <pre><code># Quick project switch
-bind-key -r f run-shell "tmux neww ~/scripts/tmux-sessionizer"
-
-# Split and run tests
-bind-key -r T split-window -h "cd #{pane_current_path} && go test ./..."</code></pre>
-                    <h3>The Philosophy</h3>
-                    <p>
-                      The best development environment is the one you stop noticing. If you're
-                      spending more time configuring your editor than writing code, something's
-                      wrong. I aim for a setup that's fast to start, predictable in behavior,
-                      and invisible when I'm in flow.
-                    </p>
-                  </div>
-                </div>
-              </article>
-
-              <!-- ── POST 3 ── -->
-              <article class="post-card" data-reveal style="--delay: 0.19s">
-                <div class="post-meta">
-                  <span class="post-tag">AI / ML</span>
-                  <time datetime="2025-02-01">Feb 1, 2025</time>
-                </div>
-                <h2><a href="#post-3" class="post-toggle">Practical RAG: Lessons From Putting Retrieval-Augmented Generation in Production</a></h2>
-                <p class="post-excerpt">
-                  RAG sounds simple in a demo. In production it's a pipeline of tradeoffs
-                  around chunking, embedding models, retrieval strategies, and prompt design.
-                </p>
-                <a href="#post-3" class="read-more post-toggle">Read more &rarr;</a>
-                <div class="post-full" id="post-3">
-                  <div class="post-body">
-                    <p>
-                      Everyone's building RAG pipelines right now, and most of the tutorials
-                      make it look trivial: embed your documents, throw them in a vector store,
-                      retrieve the top-k chunks, stuff them into a prompt. Ship it. In practice,
-                      every one of those steps hides a set of decisions that will make or break
-                      your system's usefulness.
-                    </p>
-                    <h3>Chunking Is the Whole Game</h3>
-                    <p>
-                      Your retrieval quality is bounded by your chunking strategy. Split too
-                      aggressively and you lose context. Split too conservatively and you
-                      dilute relevance. I've found that recursive character splitting with
-                      overlap works for most document types, but structured data (tables,
-                      code, configs) almost always needs custom logic.
-                    </p>
-                    <h3>Embedding Model Selection</h3>
-                    <p>
-                      Not all embeddings are created equal. For domain-specific use cases,
-                      a fine-tuned embedding model consistently outperforms general-purpose
-                      ones. The MTEB leaderboard is a good starting point, but benchmark
-                      performance doesn't always translate to your specific retrieval task.
-                      Test with your actual data.
-                    </p>
-                    <h3>Retrieval Strategy</h3>
-                    <p>
-                      Pure vector similarity search gets you 70% of the way there. The
-                      remaining 30% comes from hybrid approaches:
-                    </p>
-                    <ul>
-                      <li><strong>Hybrid search:</strong> Combine dense vector search with sparse keyword matching (BM25). Catches cases where exact terminology matters.</li>
-                      <li><strong>Reranking:</strong> Use a cross-encoder to rerank your initial retrieval results. Adds latency but significantly improves precision.</li>
-                      <li><strong>Metadata filtering:</strong> Filter by document type, date, or source before vector search. Reduces noise dramatically.</li>
-                    </ul>
-                    <h3>Prompt Engineering for RAG</h3>
-                    <p>
-                      The prompt template matters more than you'd think. Explicitly telling
-                      the model to only use the provided context, to cite sources, and to
-                      say "I don't know" when the context doesn't support an answer &mdash;
-                      these aren't nice-to-haves, they're requirements for a system that
-                      users can trust.
-                    </p>
-                    <pre><code># Basic RAG prompt structure
-You are a helpful assistant. Answer the question using ONLY
-the context provided below. If the context doesn't contain
-enough information to answer, say "I don't have enough
-information to answer that."
-
-Context:
-{retrieved_chunks}
-
-Question: {user_query}</code></pre>
-                    <h3>Evaluating RAG Systems</h3>
-                    <p>
-                      You need three metrics at minimum: retrieval precision (are you
-                      fetching relevant chunks?), answer faithfulness (is the answer
-                      grounded in the retrieved context?), and answer relevance (does the
-                      answer actually address the question?). Build an eval set early and
-                      run it on every change to your pipeline.
-                    </p>
-                  </div>
-                </div>
-              </article>
-
-            </div>
+            <div class="posts-list" id="posts-list"></div>
           </div>
         </section>
       </main>
@@ -692,25 +497,127 @@ Question: {user_query}</code></pre>
       </footer>
     </div>
 
+    <!-- marked.js – lightweight Markdown parser (11kb gzipped) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
     <script src="assets/js/reveal.js"></script>
     <script>
-      // Toggle post expansion
-      document.querySelectorAll('.post-toggle').forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const targetId = link.getAttribute('href').replace('#', '');
-          const postFull = document.getElementById(targetId);
-          if (postFull) {
-            postFull.classList.toggle('is-open');
-            // Update link text if it's the "Read more" link
-            if (link.classList.contains('read-more')) {
-              link.innerHTML = postFull.classList.contains('is-open')
+      (() => {
+        const listEl = document.getElementById('posts-list');
+
+        // ── Parse YAML-style frontmatter ──
+        function parseFrontmatter(raw) {
+          const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+          if (!match) return { meta: {}, body: raw };
+          const meta = {};
+          match[1].split('\n').forEach(line => {
+            const idx = line.indexOf(':');
+            if (idx === -1) return;
+            const key = line.slice(0, idx).trim();
+            let val = line.slice(idx + 1).trim();
+            // strip surrounding quotes
+            if ((val.startsWith('"') && val.endsWith('"')) ||
+                (val.startsWith("'") && val.endsWith("'"))) {
+              val = val.slice(1, -1);
+            }
+            meta[key] = val;
+          });
+          return { meta, body: match[2] };
+        }
+
+        // ── Format date for display ──
+        function formatDate(dateStr) {
+          const d = new Date(dateStr + 'T00:00:00');
+          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // ── Build a post card ──
+        function buildCard(meta, bodyHtml, index) {
+          const id = 'post-' + index;
+          const delay = (0.05 + index * 0.07).toFixed(2);
+
+          const article = document.createElement('article');
+          article.className = 'post-card';
+          article.setAttribute('data-reveal', '');
+          article.style.setProperty('--delay', delay + 's');
+
+          article.innerHTML =
+            '<div class="post-meta">' +
+              '<span class="post-tag">' + (meta.tag || 'General') + '</span>' +
+              '<time datetime="' + (meta.date || '') + '">' + formatDate(meta.date) + '</time>' +
+            '</div>' +
+            '<h2>' + (meta.title || 'Untitled') + '</h2>' +
+            '<p class="post-excerpt">' + (meta.excerpt || '') + '</p>' +
+            '<span class="read-more" data-target="' + id + '">Read more &rarr;</span>' +
+            '<div class="post-full" id="' + id + '">' +
+              '<div class="post-body">' + bodyHtml + '</div>' +
+            '</div>';
+
+          return article;
+        }
+
+        // ── Load all posts ──
+        async function loadPosts() {
+          try {
+            const res = await fetch('posts/posts.json');
+            const filenames = await res.json();
+
+            const posts = await Promise.all(
+              filenames.map(async (name) => {
+                const r = await fetch('posts/' + name);
+                const text = await r.text();
+                return parseFrontmatter(text);
+              })
+            );
+
+            // Sort by date descending
+            posts.sort((a, b) => {
+              const da = a.meta.date || '0000-00-00';
+              const db = b.meta.date || '0000-00-00';
+              return db.localeCompare(da);
+            });
+
+            posts.forEach((post, i) => {
+              const html = marked.parse(post.body);
+              const card = buildCard(post.meta, html, i);
+              listEl.appendChild(card);
+            });
+
+            // Re-run reveal observer for dynamically added elements
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const revealItems = listEl.querySelectorAll('[data-reveal]');
+            if (prefersReduced) {
+              revealItems.forEach(el => el.classList.add('is-visible'));
+            } else {
+              const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                  if (!entry.isIntersecting) return;
+                  entry.target.classList.add('is-visible');
+                  obs.unobserve(entry.target);
+                });
+              }, { threshold: 0.2 });
+              revealItems.forEach(el => observer.observe(el));
+            }
+
+            // Toggle expand / collapse
+            listEl.addEventListener('click', e => {
+              const toggle = e.target.closest('.read-more');
+              if (!toggle) return;
+              const targetId = toggle.getAttribute('data-target');
+              const full = document.getElementById(targetId);
+              if (!full) return;
+              full.classList.toggle('is-open');
+              toggle.innerHTML = full.classList.contains('is-open')
                 ? 'Read less &larr;'
                 : 'Read more &rarr;';
-            }
+            });
+
+          } catch (err) {
+            listEl.innerHTML = '<p style="color:var(--muted)">Could not load posts.</p>';
           }
-        });
-      });
+        }
+
+        loadPosts();
+      })();
     </script>
   </body>
 </html>
