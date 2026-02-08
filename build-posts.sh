@@ -353,7 +353,7 @@ for i in "${!all_slugs[@]}"; do
     "tag": "${all_tags[$i]}",
     "excerpt": "${escaped_excerpt}",
     "slug": "${all_slugs[$i]}",
-    "url": "blog/${all_slugs[$i]}/"
+    "url": "blog/${all_slugs[$i]}/index.html"
   }${comma}
 DATAEOF
 done
