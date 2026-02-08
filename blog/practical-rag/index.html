@@ -5,7 +5,7 @@
     <title>Practical RAG: Lessons From Putting Retrieval-Augmented Generation in Production &ndash; Aryan Binazir</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; object-src 'none'; base-uri 'self'" />
     <meta name="description" content="RAG sounds simple in a demo. In production it&#x27;s a pipeline of tradeoffs around chunking, embedding models, retrieval strategies, and prompt design." />
     <link rel="canonical" href="https://aryanbinazir.dev/blog/practical-rag/" />
     <!-- Open Graph -->
@@ -65,6 +65,46 @@
         </section>
         <section class="post-content">
           <div class="container">
+            <textarea id="post-markdown-source" hidden>
+Everyone&#x27;s building RAG pipelines right now, and most of the tutorials make it look trivial: embed your documents, throw them in a vector store, retrieve the top-k chunks, stuff them into a prompt. Ship it. In practice, every one of those steps hides a set of decisions that will make or break your system&#x27;s usefulness.
+
+## Chunking Is the Whole Game
+
+Your retrieval quality is bounded by your chunking strategy. Split too aggressively and you lose context. Split too conservatively and you dilute relevance. I&#x27;ve found that recursive character splitting with overlap works for most document types, but structured data (tables, code, configs) almost always needs custom logic.
+
+## Embedding Model Selection
+
+Not all embeddings are created equal. For domain-specific use cases, a fine-tuned embedding model consistently outperforms general-purpose ones. The MTEB leaderboard is a good starting point, but benchmark performance doesn&#x27;t always translate to your specific retrieval task. Test with your actual data.
+
+## Retrieval Strategy
+
+Pure vector similarity search gets you 70% of the way there. The remaining 30% comes from hybrid approaches:
+
+- **Hybrid search:** Combine dense vector search with sparse keyword matching (BM25). Catches cases where exact terminology matters.
+- **Reranking:** Use a cross-encoder to rerank your initial retrieval results. Adds latency but significantly improves precision.
+- **Metadata filtering:** Filter by document type, date, or source before vector search. Reduces noise dramatically.
+
+## Prompt Engineering for RAG
+
+The prompt template matters more than you&#x27;d think. Explicitly telling the model to only use the provided context, to cite sources, and to say &quot;I don&#x27;t know&quot; when the context doesn&#x27;t support an answer — these aren&#x27;t nice-to-haves, they&#x27;re requirements for a system that users can trust.
+
+```
+# Basic RAG prompt structure
+You are a helpful assistant. Answer the question using ONLY
+the context provided below. If the context doesn&#x27;t contain
+enough information to answer, say &quot;I don&#x27;t have enough
+information to answer that.&quot;
+
+Context:
+{retrieved_chunks}
+
+Question: {user_query}
+```
+
+## Evaluating RAG Systems
+
+You need three metrics at minimum: retrieval precision (are you fetching relevant chunks?), answer faithfulness (is the answer grounded in the retrieved context?), and answer relevance (does the answer actually address the question?). Build an eval set early and run it on every change to your pipeline.
+</textarea>
             <div class="post-body" id="post-body"></div>
           </div>
         </section>
@@ -85,14 +125,6 @@
 
     <script src="../../assets/js/marked.min.js"></script>
     <script src="../../assets/js/markdown-renderer.js"></script>
-    <script>
-      (() => {
-        const markdownSource = "\nEveryone's building RAG pipelines right now, and most of the tutorials make it look trivial: embed your documents, throw them in a vector store, retrieve the top-k chunks, stuff them into a prompt. Ship it. In practice, every one of those steps hides a set of decisions that will make or break your system's usefulness.\n\n## Chunking Is the Whole Game\n\nYour retrieval quality is bounded by your chunking strategy. Split too aggressively and you lose context. Split too conservatively and you dilute relevance. I've found that recursive character splitting with overlap works for most document types, but structured data (tables, code, configs) almost always needs custom logic.\n\n## Embedding Model Selection\n\nNot all embeddings are created equal. For domain-specific use cases, a fine-tuned embedding model consistently outperforms general-purpose ones. The MTEB leaderboard is a good starting point, but benchmark performance doesn't always translate to your specific retrieval task. Test with your actual data.\n\n## Retrieval Strategy\n\nPure vector similarity search gets you 70% of the way there. The remaining 30% comes from hybrid approaches:\n\n- **Hybrid search:** Combine dense vector search with sparse keyword matching (BM25). Catches cases where exact terminology matters.\n- **Reranking:** Use a cross-encoder to rerank your initial retrieval results. Adds latency but significantly improves precision.\n- **Metadata filtering:** Filter by document type, date, or source before vector search. Reduces noise dramatically.\n\n## Prompt Engineering for RAG\n\nThe prompt template matters more than you'd think. Explicitly telling the model to only use the provided context, to cite sources, and to say \"I don't know\" when the context doesn't support an answer — these aren't nice-to-haves, they're requirements for a system that users can trust.\n\n```\n# Basic RAG prompt structure\nYou are a helpful assistant. Answer the question using ONLY\nthe context provided below. If the context doesn't contain\nenough information to answer, say \"I don't have enough\ninformation to answer that.\"\n\nContext:\n{retrieved_chunks}\n\nQuestion: {user_query}\n```\n\n## Evaluating RAG Systems\n\nYou need three metrics at minimum: retrieval precision (are you fetching relevant chunks?), answer faithfulness (is the answer grounded in the retrieved context?), and answer relevance (does the answer actually address the question?). Build an eval set early and run it on every change to your pipeline.\n";
-        window.renderMarkdownInto({
-          elementId: 'post-body',
-          markdownSource
-        });
-      })();
-    </script>
+    <script src="../../assets/js/blog-post-page.js"></script>
   </body>
 </html>

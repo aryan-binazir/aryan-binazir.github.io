@@ -124,9 +124,28 @@
 
         function formatDate(dateStr) {
           if (!dateStr) return 'Unknown date';
-          const d = new Date(dateStr + 'T00:00:00');
-          if (Number.isNaN(d.getTime())) return 'Unknown date';
-          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
+          if (!match) return 'Unknown date';
+
+          const year = Number(match[1]);
+          const month = Number(match[2]);
+          const day = Number(match[3]);
+          const d = new Date(Date.UTC(year, month - 1, day));
+
+          if (
+            d.getUTCFullYear() !== year ||
+            d.getUTCMonth() !== month - 1 ||
+            d.getUTCDate() !== day
+          ) {
+            return 'Unknown date';
+          }
+
+          return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            timeZone: 'UTC'
+          });
         }
 
         // Sort by date descending
@@ -137,7 +156,12 @@
           empty.className = 'post-card empty-state';
           empty.setAttribute('data-reveal', '');
           empty.style.setProperty('--delay', '0.05s');
-          empty.innerHTML = '<h2>No posts yet</h2><p>Check back soon for new writing.</p>';
+          const emptyHeading = document.createElement('h2');
+          emptyHeading.textContent = 'No posts yet';
+          const emptyCopy = document.createElement('p');
+          emptyCopy.textContent = 'Check back soon for new writing.';
+          empty.appendChild(emptyHeading);
+          empty.appendChild(emptyCopy);
           listEl.appendChild(empty);
         }
 
@@ -177,7 +201,7 @@
           const readMore = document.createElement('a');
           readMore.href = url;
           readMore.className = 'read-more';
-          readMore.innerHTML = 'Read more &rarr;';
+          readMore.textContent = 'Read more \u2192';
 
           article.appendChild(meta);
           article.appendChild(heading);

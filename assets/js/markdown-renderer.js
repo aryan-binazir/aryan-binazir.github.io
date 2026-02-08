@@ -27,8 +27,41 @@
     var template = document.createElement('template');
     template.innerHTML = inputHtml;
 
+    var disallowedElements = [
+      'script',
+      'iframe',
+      'object',
+      'embed',
+      'meta',
+      'link',
+      'base',
+      'form',
+      'style',
+      'svg',
+      'math',
+      'use',
+      'noscript',
+      'template',
+      'audio',
+      'video',
+      'slot',
+      'noembed',
+      'canvas',
+      'applet',
+      'portal',
+      'frame',
+      'frameset',
+      'picture',
+      'source',
+      'area',
+      'map',
+      'bgsound',
+      'marquee',
+      'noframes'
+    ];
+
     template.content
-      .querySelectorAll('script, iframe, object, embed, meta, link, base, form, style, svg, math, use, noscript, template, audio, video, slot, noembed')
+      .querySelectorAll(disallowedElements.join(','))
       .forEach(function removeDisallowed(node) {
         node.remove();
       });
@@ -38,7 +71,18 @@
         var name = attribute.name.toLowerCase();
         var value = attribute.value.trim();
 
-        if (name.startsWith('on') || name === 'style' || name === 'srcdoc' || name === 'srcset' || name === 'formaction' || name === 'is') {
+        if (
+          name.startsWith('on') ||
+          name === 'style' ||
+          name === 'srcdoc' ||
+          name === 'srcset' ||
+          name === 'formaction' ||
+          name === 'is' ||
+          name === 'ping' ||
+          name === 'download' ||
+          name === 'id' ||
+          name === 'name'
+        ) {
           element.removeAttribute(attribute.name);
           return;
         }

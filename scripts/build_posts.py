@@ -24,6 +24,7 @@ import json
 import re
 import shutil
 import sys
+import unicodedata
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -35,6 +36,9 @@ MANIFEST_FILENAME = ".generated-post-slugs"
 DATE_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 MULTILINE_MARKERS = {"|", ">", "|-", "|+", ">-", ">+"}
+MAX_TITLE_LENGTH = 120
+MAX_EXCERPT_LENGTH = 300
+MAX_TAG_LENGTH = 50
 
 
 class BuildError(Exception):
@@ -56,19 +60,12 @@ class ParsedPost:
 
 
 def make_slug(path: Path) -> str:
-    name = path.stem.lower().replace(" ", "-").replace("_", "-")
+    normalized = unicodedata.normalize("NFKD", path.stem)
+    ascii_name = normalized.encode("ascii", "ignore").decode("ascii")
+    name = ascii_name.lower().replace(" ", "-").replace("_", "-")
     name = re.sub(r"[^a-z0-9-]", "", name)
     name = re.sub(r"-+", "-", name).strip("-")
     return name
-
-
-def js_string_literal(value: str) -> str:
-    # JSON encoding gives robust escaping for control chars and non-BMP code points.
-    encoded = json.dumps(value, ensure_ascii=False)
-    # Defense-in-depth when embedding in inline script context.
-    encoded = encoded.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
-    encoded = encoded.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
-    return encoded
 
 
 def parse_boolean(value: str, source_name: str, line_no: int, key: str) -> bool:
@@ -136,6 +133,14 @@ def parse_display_date(date_value: str, source_name: str) -> str:
     return f"{calendar.month_abbr[dt.month]} {dt.day}, {dt.year}"
 
 
+def validate_field_length(value: str, field: str, max_length: int, source_name: str) -> None:
+    if len(value) > max_length:
+        raise BuildError(
+            f"✗ {source_name} field '{field}' exceeds {max_length} characters "
+            f"(got {len(value)})"
+        )
+
+
 def parse_post(path: Path) -> ParsedPost:
     source_name = path.name
     try:
@@ -163,6 +168,7 @@ def parse_post(path: Path) -> ParsedPost:
         "excerpt": "",
     }
     published = True
+    seen_keys: set[str] = set()
 
     for idx, raw_line in enumerate(lines[1:closing_index], start=2):
         line = raw_line.rstrip("\r\n")
@@ -184,6 +190,10 @@ def parse_post(path: Path) -> ParsedPost:
         if not key:
             raise BuildError(f"✗ {source_name} has empty frontmatter key at line {idx}")
 
+        if key in seen_keys:
+            raise BuildError(f"✗ {source_name} has duplicate frontmatter key '{key}' at line {idx}")
+        seen_keys.add(key)
+
         value = parse_frontmatter_value(value_part, source_name, idx, key)
 
         if key in values:
@@ -194,10 +204,16 @@ def parse_post(path: Path) -> ParsedPost:
             published = parse_boolean(value, source_name, idx, key)
             continue
 
+        raise BuildError(f"✗ {source_name} has unsupported frontmatter key '{key}' at line {idx}")
+
     missing = [name for name, val in values.items() if not val.strip()]
     if missing:
         missing_fields = " ".join(missing)
         raise BuildError(f"✗ {source_name} is missing required frontmatter: {missing_fields}")
+
+    validate_field_length(values["title"], "title", MAX_TITLE_LENGTH, source_name)
+    validate_field_length(values["excerpt"], "excerpt", MAX_EXCERPT_LENGTH, source_name)
+    validate_field_length(values["tag"], "tag", MAX_TAG_LENGTH, source_name)
 
     display_date = parse_display_date(values["date"], source_name)
 
@@ -206,6 +222,8 @@ def parse_post(path: Path) -> ParsedPost:
         raise BuildError(f"✗ {source_name} produced an empty slug")
 
     body_markdown = "".join(lines[closing_index + 1 :])
+    if not body_markdown.strip():
+        raise BuildError(f"✗ {source_name} has an empty markdown body")
 
     return ParsedPost(
         source_path=path,
@@ -256,7 +274,7 @@ def cleanup_generated_blog_dirs(blog_dir: Path, manifest_file: Path, keep_slugs:
             continue
 
         try:
-            contents = index_html.read_text(encoding="utf-8", errors="ignore")
+            contents = index_html.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
 
@@ -268,7 +286,7 @@ def render_post_html(post: ParsedPost) -> str:
     title_h = html.escape(post.title, quote=True)
     excerpt_h = html.escape(post.excerpt, quote=True)
     tag_h = html.escape(post.tag, quote=True)
-    body_js = js_string_literal(post.body_markdown)
+    body_markdown_h = html.escape(post.body_markdown)
 
     lines = [
         "<!DOCTYPE html>",
@@ -278,7 +296,7 @@ def render_post_html(post: ParsedPost) -> str:
         f"    <title>{title_h} &ndash; Aryan Binazir</title>",
         "    <meta charset=\"utf-8\" />",
         "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />",
-        "    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; object-src 'none'; base-uri 'self'\" />",
+        "    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; object-src 'none'; base-uri 'self'\" />",
         f"    <meta name=\"description\" content=\"{excerpt_h}\" />",
         f"    <link rel=\"canonical\" href=\"{SITE_URL}/blog/{post.slug}/\" />",
         "    <!-- Open Graph -->",
@@ -338,6 +356,7 @@ def render_post_html(post: ParsedPost) -> str:
         "        </section>",
         "        <section class=\"post-content\">",
         "          <div class=\"container\">",
+        f"            <textarea id=\"post-markdown-source\" hidden>{body_markdown_h}</textarea>",
         "            <div class=\"post-body\" id=\"post-body\"></div>",
         "          </div>",
         "        </section>",
@@ -358,15 +377,7 @@ def render_post_html(post: ParsedPost) -> str:
         "",
         "    <script src=\"../../assets/js/marked.min.js\"></script>",
         "    <script src=\"../../assets/js/markdown-renderer.js\"></script>",
-        "    <script>",
-        "      (() => {",
-        f"        const markdownSource = {body_js};",
-        "        window.renderMarkdownInto({",
-        "          elementId: 'post-body',",
-        "          markdownSource",
-        "        });",
-        "      })();",
-        "    </script>",
+        "    <script src=\"../../assets/js/blog-post-page.js\"></script>",
         "  </body>",
         "</html>",
         "",
