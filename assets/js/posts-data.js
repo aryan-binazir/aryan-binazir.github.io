@@ -1,0 +1,1 @@
+window.POSTS_DATA = [];
