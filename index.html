@@ -131,7 +131,8 @@
         color: var(--muted);
         transition: color 0.2s;
       }
-      .text-nav a:hover { color: var(--accent-2); }
+      .text-nav a:hover,
+      .text-nav a.active { color: var(--accent-2); }
 
       /* Divider between text nav and icon nav */
       .nav-divider {
@@ -588,5 +589,35 @@
     </div>
 
     <script src="assets/js/reveal.js"></script>
+    <script>
+      (() => {
+        const navLinks = document.querySelectorAll('.text-nav a[href^="#"]');
+        if (!navLinks.length) return;
+
+        const setActive = hash => {
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === hash);
+          });
+        };
+
+        const updateFromHash = () => {
+          const { hash } = window.location;
+          if (!hash) {
+            navLinks.forEach(link => link.classList.remove('active'));
+            return;
+          }
+          setActive(hash);
+        };
+
+        navLinks.forEach(link => {
+          link.addEventListener('click', () => {
+            setActive(link.getAttribute('href'));
+          });
+        });
+
+        window.addEventListener('hashchange', updateFromHash);
+        updateFromHash();
+      })();
+    </script>
   </body>
 </html>
