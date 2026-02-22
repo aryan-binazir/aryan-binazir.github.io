@@ -294,6 +294,48 @@
         height: auto;
       }
 
+      /* ── FINDINGS PROMO ── */
+      .findings-promo {
+        padding: 0 0 clamp(3.5rem, 6.3vw, 5rem);
+      }
+
+      .findings-promo .feature-copy p + p {
+        margin-top: 0.6rem;
+      }
+
+      .findings-promo-sub {
+        font-size: 0.92rem;
+        opacity: 0.7;
+        line-height: 1.55;
+      }
+
+      .findings-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        justify-content: center;
+        align-content: center;
+        max-width: 280px;
+        margin: 0 auto;
+      }
+
+      .findings-tag {
+        display: inline-block;
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(16, 23, 32, 0.8);
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--accent-2);
+        cursor: default;
+      }
+
+      .findings-tag:nth-child(even) {
+        color: var(--accent);
+        border-color: rgba(210,140,98,0.3);
+      }
+
       /* ── PROJECTS ── */
       .projects {
         padding: 0 0 clamp(4rem, 7.2vw, 6rem);
@@ -410,8 +452,8 @@
 
           <div class="header-right">
             <nav class="text-nav" aria-label="Main navigation">
-              <a href="findings.html">Findings</a>
               <a href="#triage">Triage</a>
+              <a href="#findings">Findings</a>
               <a href="#projects">Projects</a>
             </nav>
 
@@ -501,6 +543,38 @@
               </div>
               <div class="feature-media" data-reveal style="--delay: 0.1s">
                 <img class="feature-logo" src="images/logo-color2.png" alt="Triage" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── FINDINGS PROMO ── -->
+        <section id="findings" class="findings-promo">
+          <div class="container">
+            <div class="feature-card feature-grid">
+              <div class="feature-copy" data-reveal>
+                <header class="section-head">
+                  <h2>Findings</h2>
+                </header>
+                <p>
+                  Notes on building reliable software and applied AI systems.
+                </p>
+                <p class="findings-promo-sub">
+                  Dispatches from the intersection of engineering and applied AI.
+                </p>
+                <div class="button-row">
+                  <a href="findings.html" class="btn">Explore Findings</a>
+                </div>
+              </div>
+              <div class="feature-media" data-reveal style="--delay: 0.1s">
+                <div class="findings-tags">
+                  <span class="findings-tag">Orchestration</span>
+                  <span class="findings-tag">Applied AI</span>
+                  <span class="findings-tag">Go</span>
+                  <span class="findings-tag">Evals</span>
+                  <span class="findings-tag">LLMs</span>
+                  <span class="findings-tag">Python</span>
+                </div>
               </div>
             </div>
           </div>
