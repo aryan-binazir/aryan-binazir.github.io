@@ -9,26 +9,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Work+Sans:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
       /* ═══════════════════════════════════════════
-         index-21  –  Ink & Stone
-         Zen Minimalist variation: literary, architectural
-         EB Garamond headings, Work Sans body
-         Stone gray background, deep slate + muted brick
+         Night Study
+         Dark, literary: charcoal background, brass accent
+         Playfair Display headings, IBM Plex Sans body
+         Full-width desktop layout (1400px container)
          ═══════════════════════════════════════════ */
 
       :root {
-        --bg:        #EDE8E4;
-        --bg-alt:    #E6E0DB;
-        --ink:       #2D2D2D;
-        --muted:     #6B6560;
-        --accent:    #4A5568;
-        --accent-hover: #B85C38;
-        --divider:   #C8C0B8;
-        --divider-light: #D8D2CC;
+        --bg:        #17191E;
+        --bg-alt:    #1E2127;
+        --ink:       #E8E3DA;
+        --muted:     #9A948A;
+        --accent:    #C9A227;
+        --accent-hover: #E4C34E;
+        --divider:   #33363E;
+        --divider-light: #282B32;
         --scroll-offset: 72px;
       }
 
@@ -42,7 +42,7 @@
 
       body {
         min-height: 100vh;
-        font-family: 'Work Sans', sans-serif;
+        font-family: 'IBM Plex Sans', sans-serif;
         font-weight: 400;
         color: var(--ink);
         background: var(--bg);
@@ -63,7 +63,7 @@
       }
 
       .container {
-        width: min(960px, 88vw);
+        width: min(1400px, 92vw);
         margin: 0 auto;
       }
 
@@ -94,7 +94,7 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        background: rgba(237, 232, 228, 0.92);
+        background: rgba(23, 25, 30, 0.88);
         border-bottom: 1px solid var(--divider-light);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -107,7 +107,7 @@
       }
 
       .header-brand {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Playfair Display', serif;
         font-size: 1.25rem;
         font-weight: 500;
         color: var(--ink);
@@ -190,7 +190,7 @@
         text-align: left;
       }
       .hero-title {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Playfair Display', serif;
         font-size: clamp(2.8rem, 5.5vw, 4.2rem);
         font-weight: 500;
         line-height: 1.08;
@@ -228,7 +228,7 @@
         align-items: center;
         gap: 0.45rem;
         margin-top: 1.5rem;
-        font-family: 'Work Sans', sans-serif;
+        font-family: 'IBM Plex Sans', sans-serif;
         font-size: 0.92rem;
         font-weight: 500;
         color: var(--accent);
@@ -249,7 +249,7 @@
 
       /* ═════════════════ SECTION HEADINGS ═════════════════ */
       .section-head h2 {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Playfair Display', serif;
         font-size: clamp(1.8rem, 3vw, 2.4rem);
         font-weight: 500;
         letter-spacing: 0;
@@ -295,7 +295,7 @@
         color: var(--muted);
       }
       .findings-sub {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Playfair Display', serif;
         font-style: italic;
         font-size: 1.05rem;
         margin-top: 0.4rem;
@@ -357,7 +357,7 @@
         filter: grayscale(0%);
       }
       .project-content h3 {
-        font-family: 'EB Garamond', serif;
+        font-family: 'Playfair Display', serif;
         font-size: 1.35rem;
         font-weight: 500;
         line-height: 1.2;
@@ -457,6 +457,17 @@
         html { scroll-behavior: auto; }
         [data-reveal] { opacity: 1; transform: none; transition: none; }
       }
+    
+      /* ── Night Study details ── */
+      .section-head h2::after { content: ''; display: block; width: 2.5rem; height: 2px; background: var(--accent); margin-top: 0.6rem; }
+      .portrait img { filter: grayscale(20%) brightness(0.95); }
+      .project-img { filter: grayscale(20%) brightness(0.9); }
+      .project-item:hover .project-img { filter: grayscale(0%) brightness(1); }
+      @media (min-width: 1100px) {
+        .project-item { grid-template-columns: 340px 1fr; }
+        .project-content p { max-width: 75ch; }
+      }
+    
     </style>
   </head>
   <body class="site">
