@@ -71,6 +71,19 @@
       .card:not(.wide) .txt { flex: 1; display: flex; flex-direction: column; }
       .card:not(.wide) .go { margin-top: auto; padding-top: 18px; }
       .card .go::after { content: " \2192"; color: var(--muted); }
+      .cycle { position: relative; }
+      .cycle img { position: absolute; inset: 0; opacity: 0; animation: cycle 15s infinite; }
+      .cycle img:first-child { position: static; opacity: 1; }
+      .cycle img:nth-child(2) { animation-delay: 5s; }
+      .cycle img:nth-child(3) { animation-delay: 10s; }
+      .cycle img:first-child { animation-name: cycle-first; }
+      .dots { position: absolute; left: 50%; bottom: 7px; translate: -50% 0; display: flex; gap: 6px; }
+      .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); animation: dot 15s infinite; }
+      .dots i:nth-child(2) { animation-delay: 5s; }
+      .dots i:nth-child(3) { animation-delay: 10s; }
+      @keyframes cycle { 0% { opacity: 0; } 4%, 33.3% { opacity: 1; } 37.3%, 100% { opacity: 0; } }
+      @keyframes cycle-first { 0%, 33.3% { opacity: 1; } 37.3%, 96% { opacity: 0; } 100% { opacity: 1; } }
+      @keyframes dot { 0%, 33.3% { background: rgba(255, 255, 255, 0.85); } 37.3%, 100% { background: rgba(255, 255, 255, 0.25); } }
       .ride .media { position: relative; background: #141518; }
       .ride .media img { position: absolute; top: 28px; left: 28px; width: calc(100% - 28px); height: calc(100% - 28px); border-radius: 10px 0 0 0; box-shadow: 0 0 0 1px var(--line-strong); filter: brightness(.92); }
       .triage .media { aspect-ratio: 8 / 5; display: grid; place-items: center; padding: 20px; background: #141518; }
@@ -126,6 +139,8 @@
       @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
         .card, .card:hover { transition: none; transform: none; }
+        .cycle img, .dots i { animation: none; }
+        .dots { display: none; }
       }
     </style>
   </head>
@@ -154,8 +169,41 @@
 
         <h2 class="label" id="work">Selected work</h2>
         <div class="grid">
+          <a class="card wide triage" href="https://team-triage.github.io/case-study" target="_blank" rel="noopener noreferrer">
+            <div class="media">
+              <svg class="flow" viewBox="0 0 480 300" role="img" aria-label="Triage pulls messages from a Kafka partition and fans them out to three consumers in parallel. A slow message ties up one consumer while the others keep flowing, and a poison pill goes to the dead letter store.">
+                <text x="8" y="136">Kafka partition</text>
+                <path class="wire" d="M8 150H166" />
+                <path class="wire" d="M234 150C280 150 270 46 320 46M234 150C280 150 270 110 320 110M234 150C280 150 270 174 320 174M234 150C280 150 270 247 320 247" />
+                <rect class="box" x="166" y="122" width="68" height="56" rx="12" />
+                <image href="images/logo-color2.png" x="188" y="128" width="24" height="24" />
+                <text class="name" x="200" y="168" text-anchor="middle">Triage</text>
+                <rect class="box" data-c="0" x="320" y="26" width="148" height="40" rx="9" /><text x="354" y="48">consumer 1</text><rect class="bar" data-b="0" x="354" y="55" width="0" height="2" rx="1" />
+                <rect class="box" data-c="1" x="320" y="90" width="148" height="40" rx="9" /><text x="354" y="112">consumer 2</text><rect class="bar" data-b="1" x="354" y="119" width="0" height="2" rx="1" />
+                <rect class="box" data-c="2" x="320" y="154" width="148" height="40" rx="9" /><text x="354" y="176">consumer 3</text><rect class="bar" data-b="2" x="354" y="183" width="0" height="2" rx="1" />
+                <rect class="box dlq" x="320" y="222" width="148" height="50" rx="9" /><text x="332" y="240">dead letter store</text>
+                <g class="msgs"></g>
+                <rect x="8" y="287" width="12" height="8" rx="2" fill="#E6E8EB" /><text x="26" y="295">message</text>
+                <rect x="96" y="287" width="12" height="8" rx="2" fill="#E8B04B" /><text x="114" y="295">slow</text>
+                <rect x="160" y="287" width="12" height="8" rx="2" fill="#E5604D" /><text x="178" y="295">poison pill</text>
+              </svg>
+            </div>
+            <div class="txt">
+              <div>
+                <h3>Triage</h3>
+                <div class="tech">Kafka consumer proxy · Open source</div>
+                <p>Routes poison-pill messages to a dead letter store and uses parallel consumers so one slow message never blocks the queue.</p>
+              </div>
+              <div class="go">Case study</div>
+            </div>
+          </a>
           <a class="card" href="https://github.com/aryan-binazir/pi-extensions" target="_blank" rel="noopener noreferrer">
-            <div class="media"><img src="images/pi-extensions.jpg" alt="Pi config with subagents, guardian, hooks and regen enabled" loading="lazy" /></div>
+            <div class="media cycle">
+              <img src="images/pi-guardian.jpg" alt="Guardian approving tests and an edit, then rejecting a force-push to main" loading="lazy" />
+              <img src="images/pi-subagents.jpg" alt="Subagents panel with three workers running and one queued" loading="lazy" />
+              <img src="images/pi-catalog.jpg" alt="Pi extension catalog: guardian, subagents, hooks, regen, escape continue, footer, vi mode, todo" loading="lazy" />
+              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </div>
             <div class="txt">
               <h3>Pi Extensions</h3>
               <div class="tech">TypeScript · Open source</div>
@@ -182,34 +230,6 @@
                 <p>Built with a heavy emphasis on making the routing algorithms efficient and fast.</p>
               </div>
               <div class="go">GitHub</div>
-            </div>
-          </a>
-          <a class="card wide triage" href="https://team-triage.github.io/case-study" target="_blank" rel="noopener noreferrer">
-            <div class="media">
-              <svg class="flow" viewBox="0 0 480 300" role="img" aria-label="Triage pulls messages from a Kafka partition and fans them out to three consumers in parallel. A slow message ties up one consumer while the others keep flowing, and a poison pill goes to the dead letter store.">
-                <text x="8" y="136">partition</text>
-                <path class="wire" d="M8 150H166" />
-                <path class="wire" d="M234 150C280 150 270 46 320 46M234 150C280 150 270 110 320 110M234 150C280 150 270 174 320 174M234 150C280 150 270 247 320 247" />
-                <rect class="box" x="166" y="122" width="68" height="56" rx="12" />
-                <image href="images/logo-color2.png" x="188" y="128" width="24" height="24" />
-                <text class="name" x="200" y="168" text-anchor="middle">Triage</text>
-                <rect class="box" data-c="0" x="320" y="26" width="148" height="40" rx="9" /><text x="354" y="48">consumer 1</text><rect class="bar" data-b="0" x="354" y="55" width="0" height="2" rx="1" />
-                <rect class="box" data-c="1" x="320" y="90" width="148" height="40" rx="9" /><text x="354" y="112">consumer 2</text><rect class="bar" data-b="1" x="354" y="119" width="0" height="2" rx="1" />
-                <rect class="box" data-c="2" x="320" y="154" width="148" height="40" rx="9" /><text x="354" y="176">consumer 3</text><rect class="bar" data-b="2" x="354" y="183" width="0" height="2" rx="1" />
-                <rect class="box dlq" x="320" y="222" width="148" height="50" rx="9" /><text x="332" y="240">dead letter store</text>
-                <g class="msgs"></g>
-                <rect x="8" y="287" width="12" height="8" rx="2" fill="#E6E8EB" /><text x="26" y="295">message</text>
-                <rect x="96" y="287" width="12" height="8" rx="2" fill="#E8B04B" /><text x="114" y="295">slow</text>
-                <rect x="160" y="287" width="12" height="8" rx="2" fill="#E5604D" /><text x="178" y="295">poison pill</text>
-              </svg>
-            </div>
-            <div class="txt">
-              <div>
-                <h3>Triage</h3>
-                <div class="tech">Kafka consumer proxy · Open source</div>
-                <p>Routes poison-pill messages to a dead letter store and uses parallel consumers so one slow message never blocks the queue.</p>
-              </div>
-              <div class="go">Case study</div>
             </div>
           </a>
         </div>
