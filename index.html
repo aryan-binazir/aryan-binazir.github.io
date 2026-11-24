@@ -84,8 +84,13 @@
       @keyframes cycle { 0% { opacity: 0; } 4%, 33.3% { opacity: 1; } 37.3%, 100% { opacity: 0; } }
       @keyframes cycle-first { 0%, 33.3% { opacity: 1; } 37.3%, 96% { opacity: 0; } 100% { opacity: 1; } }
       @keyframes dot { 0%, 33.3% { background: rgba(255, 255, 255, 0.85); } 37.3%, 100% { background: rgba(255, 255, 255, 0.25); } }
-      .ride .media { position: relative; background: #141518; }
-      .ride .media img { position: absolute; top: 28px; left: 28px; width: calc(100% - 28px); height: calc(100% - 28px); border-radius: 10px 0 0 0; box-shadow: 0 0 0 1px var(--line-strong); filter: brightness(.92); }
+      .card .media > svg { display: block; width: 100%; height: 100%; }
+      .card.wide.ride .media { aspect-ratio: 8 / 5; }
+      .herdr text{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;font-size:23px;fill:#C0CAF5;white-space:pre}
+      .herdr .dim{fill:#737AA2}.herdr .num{fill:#7AA2F7}.herdr .b{font-weight:700}
+      .herdr .hint{font-size:19px}
+      .rhr text{font-family:"Onest",system-ui,sans-serif;fill:#C3C7CD}
+      .rhr .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
       .triage .media { aspect-ratio: 8 / 5; display: grid; place-items: center; padding: 20px; background: #141518; }
       .flow { width: 100%; height: 100%; overflow: visible; font-family: inherit; }
       .flow text { fill: var(--muted); font-size: 12px; }
@@ -115,7 +120,6 @@
         .card.wide { display: flex; }
         .card.wide .media { order: 0; border-left: 0; border-bottom: 1px solid var(--line); aspect-ratio: 16 / 10; }
         .card.wide .txt { padding: 26px 28px 28px; }
-        .ride .media img { top: 20px; left: 20px; width: calc(100% - 20px); height: calc(100% - 20px); }
         .triage .media { aspect-ratio: 8 / 5; padding: 8px; }
         .flow text { font-size: 15px; }
         .flow .name { font-size: 13px; }
@@ -212,7 +216,22 @@
             </div>
           </a>
           <a class="card" href="https://github.com/aryan-binazir/herdr-triage" target="_blank" rel="noopener noreferrer">
-            <div class="media"><img src="images/herdr-triage.jpg" alt="herdr-triage agent picker listing coding-agent threads by status" loading="lazy" /></div>
+            <div class="media"><svg class="herdr" viewBox="0 0 1200 750" role="img" aria-label="herdr-triage picker: settling a finished thread, snoozing an idle one for three hours, and marking an unread thread as read.">
+  <rect width="1200" height="750" fill="#16161E"/>
+  <rect x="22" y="20" width="1156" height="710" fill="#1E1F2E" stroke="#7AA2F7" stroke-width="2"/>
+  <rect x="34" y="8" width="96" height="26" fill="#16161E"/><text x="38" y="28" class="num">Agents</text>
+  <rect x="48" y="50" width="1104" height="54" rx="6" fill="none" stroke="#4A4E69" stroke-width="2"/>
+  <text x="68" y="85" class="dim" font-style="italic">❱ / to search</text><text x="1112" y="85" class="dim" text-anchor="end" id="h-count">10</text>
+  <text x="66" y="160" class="dim">#</text><text x="132" y="160" class="dim">Thread</text>
+  <text x="650" y="160" class="dim">Workspace</text><text x="878" y="160" class="dim">Agent</text><text x="990" y="160" class="dim">Status</text>
+  <path d="M42 178H1158" stroke="#3B3E57" stroke-width="2"/>
+  <g id="h-sel"><rect x="42" y="0" width="1116" height="36" fill="#414868"/><rect x="42" y="0" width="4" height="36" fill="#7AA2F7"/></g>
+  <g id="h-rows"></g>
+  <g id="h-sections"></g>
+  <path d="M42 672H1158" stroke="#3B3E57" stroke-width="2"/>
+  <g id="h-foot"></g>
+  <g id="h-key" opacity="0"><rect x="1088" y="596" width="56" height="52" rx="10" fill="#2A2C40" stroke="#7AA2F7" stroke-width="2"/><text id="h-keyt" x="1116" y="631" text-anchor="middle" class="b" style="font-size:24px;fill:#C0CAF5">s</text></g>
+</svg></div>
             <div class="txt">
               <h3>herdr-triage</h3>
               <div class="tech">Rust · Open source</div>
@@ -221,7 +240,22 @@
             </div>
           </a>
           <a class="card wide ride" href="https://github.com/aryan-binazir/ride-home-router" target="_blank" rel="noopener noreferrer">
-            <div class="media"><img src="images/ride-home-router-routes.jpg" alt="Ride Home Router showing four dropoff routes for 18 riders, with the first driver's six stops" loading="lazy" /></div>
+            <div class="media"><svg class="rhr" viewBox="0 0 1200 750" role="img" aria-label="Ride Home Router planning dropoff routes: a bearing sweep groups households by direction, routes are drawn for four drivers, and local search moves one household to shorten the longest detour.">
+  <rect width="1200" height="750" fill="#0E1013"/>
+  <g id="r-grid" stroke="#FFFFFF" stroke-opacity="0.045" stroke-width="2" fill="none"></g>
+  <g id="r-sweep" opacity="0"><path id="r-wedge" fill="#FFFFFF" fill-opacity="0.05"/><line id="r-arm" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2"/></g>
+  <g id="r-routes" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="r-nodes"></g>
+  <g id="r-cars"></g>
+  <g id="r-venue"><circle cx="600" cy="400" r="22" fill="#F3F4F5" fill-opacity="0.08"/><circle cx="600" cy="400" r="10" fill="#F3F4F5"/><text x="584" y="440" text-anchor="end" font-size="21" fill-opacity="0.8">Community Center</text></g>
+  <g id="r-panel">
+    <rect x="32" y="32" width="440" height="150" rx="16" fill="#141518" fill-opacity="0.92" stroke="#FFFFFF" stroke-opacity="0.1"/>
+    <text id="r-title" x="58" y="78" font-size="30" font-weight="500" style="fill:#F3F4F5">Plan an event</text>
+    <text id="r-sub" x="58" y="116" font-size="22" style="fill:#8A8F98">18 riders · 4 drivers</text>
+    <text id="r-stat" x="58" y="152" font-size="22" style="fill:#8A8F98"></text>
+  </g>
+  <text id="r-phase" class="mono" x="36" y="712" font-size="22" style="fill:#7A7F88"></text>
+</svg></div>
             <div class="txt">
               <div>
                 <h3>Ride Home Router</h3>
@@ -366,6 +400,238 @@
           if (visible && !was) { last = performance.now(); requestAnimationFrame(frame); }
         }).observe(svg);
       })();
+    </script>
+    <script>
+      function play(el, render, still) {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) { render(still); return; }
+        let t = 0, last = 0, on = false;
+        const frame = now => {
+          if (!on) return;
+          t += Math.min(0.05, (now - last) / 1000);
+          last = now;
+          render(t);
+          requestAnimationFrame(frame);
+        };
+        render(0);
+        new IntersectionObserver(([entry]) => {
+          const was = on;
+          on = entry.isIntersecting;
+          if (on && !was) { last = performance.now(); requestAnimationFrame(frame); }
+        }).observe(el);
+      }
+      (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = id => document.getElementById(id);
+  const SPIN = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+  const C = { work: "#E0AF68", block: "#F7768E", idle: "#9ECE6A", done: "#73DACA", dim: "#737AA2" };
+  const ROWS = {
+    hook:    { t: "add webhook retries", ws: "mobile · api", ag: "claude", st: "blocked <1m", c: C.block, icon: "◉" },
+    dark:    { t: "spike dark mode toggle", ws: "sandbox", ag: "codex", st: "idle <1m", c: C.dim, icon: "✓", ic: C.idle },
+    docs:    { t: "docs pass", ws: "mobile · web", ag: "pi", st: "unread", c: C.done, icon: "●", bold: true },
+    flaky:   { t: "fix flaky checkout test", ws: "web-app", ag: "codex", st: "done <1m", c: C.done, icon: "●", bold: true },
+  };
+  const docsRead = { ...ROWS.docs, st: "done <1m", bold: false };
+  const FOOT = [["enter", "focus"], ["j/k", "move"], ["s", "settle"], ["z", "snooze"], ["u", "unread"], ["p", "pin"], ["U", "undo"], ["q", "close"]];
+  const SNOOZE = [["1", "1h"], ["2", "3h"], ["3", "today 18:00"], ["4", "tomorrow 09:00"], ["esc", "cancel"]];
+  const ALL = ["hook", "dark", "docs", "flaky"];
+  // state timeline: rows shown, cursor row id, footer mode, counts, key pressed
+  const S = [
+    { t: 0,    rows: ALL, cur: "hook", snz: 1, stl: 2 },
+    { t: 1.4,  rows: ALL, cur: "dark", snz: 1, stl: 2, key: "j" },
+    { t: 2.0,  rows: ALL, cur: "docs", snz: 1, stl: 2, key: "j" },
+    { t: 2.6,  rows: ALL, cur: "flaky", snz: 1, stl: 2, key: "j" },
+    { t: 3.6,  rows: ["hook", "dark", "docs"], cur: "hook", snz: 1, stl: 3, key: "s" },
+    { t: 4.8,  rows: ["hook", "dark", "docs"], cur: "dark", snz: 1, stl: 3, key: "j" },
+    { t: 5.6,  rows: ["hook", "dark", "docs"], cur: "dark", snz: 1, stl: 3, key: "z", prompt: true },
+    { t: 7.0,  rows: ["hook", "docs"], cur: "hook", snz: 2, stl: 3, key: "2", pick: true },
+    { t: 8.2,  rows: ["hook", "docs"], cur: "docs", snz: 2, stl: 3, key: "j" },
+    { t: 9.2,  rows: ["hook", "docs"], cur: "docs", snz: 2, stl: 3, key: "u", read: true },
+  ];
+  const PERIOD = 14, Y0 = 210, DY = 38, EASE = x => 1 - (1 - x) ** 3;
+  const rowsG = $("h-rows"), secG = $("h-sections"), footG = $("h-foot");
+  const els = {};
+  const txt = (parent, x, y, s, cls, fill, anchor) => {
+    const e = document.createElementNS(NS, "text");
+    e.setAttribute("x", x); e.setAttribute("y", y);
+    if (cls) e.setAttribute("class", cls);
+    if (fill) e.style.fill = fill;
+    if (anchor) e.setAttribute("text-anchor", anchor);
+    e.textContent = s; parent.appendChild(e); return e;
+  };
+  for (const id of ALL) {
+    const g = document.createElementNS(NS, "g"); rowsG.appendChild(g);
+    const r = ROWS[id];
+    els[id] = { g, num: txt(g, 66, 0, "", "num"), icon: txt(g, 104, 0, "", null, r.ic || r.c),
+      t: txt(g, 132, 0, r.t), ws: txt(g, 650, 0, r.ws, "dim"), ag: txt(g, 878, 0, r.ag, "dim"), st: txt(g, 990, 0, r.st, null, r.c) };
+  }
+  const secs = [0, 1, 2].map(() => txt(secG, 132, 0, "", "dim"));
+  function footer(items, hl, prefix) {
+    footG.textContent = "";
+    let x = 66;
+    if (prefix) { const e = txt(footG, x, 712, prefix, "hint b", C.work); x += prefix.length * 11.45 + 22; }
+    for (const [k, v] of items) {
+      const ke = txt(footG, x, 712, k, "hint b", k === hl ? C.work : "#C0CAF5"); x += (k.length + 1) * 11.45;
+      const ve = txt(footG, x, 712, v, "hint", k === hl ? C.work : C.dim); x += (v.length + 2) * 11.45;
+    }
+  }
+  const idx = (st, id) => st.rows.indexOf(id);
+  const render = T => {
+    const t = T % PERIOD;
+    let i = 0; while (i + 1 < S.length && S[i + 1].t <= t) i++;
+    const cur = S[i], prev = S[Math.max(0, i - 1)];
+    const p = i === 0 ? 1 : EASE(Math.min(1, (t - cur.t) / 0.35));
+    const fadeAll = t > PERIOD - 1 ? Math.max(0, (PERIOD - t) / 0.6) : t < 0.4 && T >= PERIOD ? t / 0.4 : 1;
+    for (const id of ALL) {
+      const e = els[id], r = id === "docs" && cur.read ? docsRead : ROWS[id];
+      const a = idx(prev, id), b = idx(cur, id);
+      let y, o = 1;
+      if (b >= 0 && a >= 0) y = Y0 + (a + (b - a) * p) * DY;
+      else if (b >= 0) y = Y0 + b * DY;
+      else if (a >= 0) { y = Y0 + a * DY; o = 1 - p; }
+      else { o = 0; y = Y0; }
+      e.g.setAttribute("opacity", o * fadeAll);
+      for (const k of ["num", "icon", "t", "ws", "ag", "st"]) e[k].setAttribute("y", y + 8);
+      const n = b >= 0 ? b + 1 : a + 1;
+      e.num.textContent = String(n);
+      e.icon.textContent = r.icon === "spin" ? SPIN[Math.floor(t * 10) % 10] : r.icon;
+      e.st.textContent = r.st; e.st.style.fill = r.c;
+      const bold = r.bold ? "b" : "";
+      e.t.setAttribute("class", bold); e.st.setAttribute("class", bold);
+    }
+    const ca = idx(prev, prev.cur), cb = idx(cur, cur.cur);
+    const cy = Y0 + (ca + (cb - ca) * p) * DY - 26;
+    $("h-sel").setAttribute("transform", `translate(0 ${cy.toFixed(1)})`);
+    $("h-sel").setAttribute("opacity", fadeAll);
+    const rowsEnd = Y0 + (prev.rows.length + (cur.rows.length - prev.rows.length) * p) * DY;
+    const labels = ["▸ working · 3", `▸ snoozed · ${cur.snz}`, `▸ settled · ${cur.stl}`];
+    secs.forEach((e, k) => { e.setAttribute("y", rowsEnd + k * DY + 8); e.textContent = labels[k]; e.setAttribute("opacity", fadeAll); });
+    const keyAge = t - cur.t, showKey = cur.key && keyAge < 0.7 && i > 0;
+    $("h-key").setAttribute("opacity", showKey ? Math.min(1, (0.7 - keyAge) / 0.25) : 0);
+    $("h-keyt").textContent = cur.key || "";
+    const hl = showKey ? { s: "s", u: "u", j: "j/k", z: "z" }[cur.key] : null;
+    if (cur.prompt) footer(SNOOZE, null, `snooze "${ROWS.dark.t}"`);
+    else if (cur.pick && keyAge < 0.5) footer(SNOOZE, "2", `snooze "${ROWS.dark.t}"`);
+    else footer(FOOT, hl);
+    footG.setAttribute("opacity", fadeAll);
+  };
+  play(document.querySelector(".herdr"), render, 6);
+})();
+      (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = id => document.getElementById(id);
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const V = [600, 400];
+  const COL = ["#4C7DFF", "#34B37E", "#E5A93C", "#A884F0"];
+  // households: position, riders, driver before, driver after local search
+  const H = [
+    { p: [700, 300], n: 3, d: 0 }, { p: [800, 215], n: 3, d: 0 },
+    { p: [740, 470], n: 2, d: 1 }, { p: [790, 640], n: 1, d: 1, after: 2 }, { p: [895, 470], n: 2, d: 1 },
+    { p: [610, 585], n: 2, d: 2 }, { p: [690, 655], n: 2, d: 2 },
+    { p: [445, 355], n: 2, d: 3 }, { p: [335, 290], n: 1, d: 3 },
+  ];
+  const HOME = [[905, 160], [1010, 520], [905, 700], [235, 235]];
+  const BEFORE = [[0, 1], [2, 3, 4], [5, 6], [7, 8]];
+  const AFTER = [[0, 1], [2, 4], [5, 6, 3], [7, 8]];
+  const PERIOD = 15;
+  const ease = x => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - (1 - x) ** 3);
+  const clamp = x => Math.max(0, Math.min(1, x));
+  const ang = p => Math.atan2(p[1] - V[1], p[0] - V[0]);
+
+  // deterministic street grid
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const grid = $("r-grid");
+  for (let x = 40; x < 1200; x += 70 + rnd() * 40) mk("path", { d: `M${x} 0L${x + (rnd() - 0.5) * 60} 750` }, grid);
+  for (let y = 30; y < 750; y += 60 + rnd() * 40) mk("path", { d: `M0 ${y}L1200 ${y + (rnd() - 0.5) * 50}` }, grid);
+  mk("path", { d: "M0 690C300 600 420 520 600 400S980 140 1200 90", "stroke-opacity": "0.08", "stroke-width": "6" }, grid);
+
+  const pts = route => route.map(i => H[i].p);
+  const pathD = (stops, home) => "M" + [V, ...stops, home].map(p => p.join(" ")).join("L");
+  const routesG = $("r-routes");
+  const mkRoute = (d, c) => mk("path", { d, stroke: c, pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 }, routesG);
+  const before = BEFORE.map((r, d) => mkRoute(pathD(pts(r), HOME[d]), COL[d]));
+  const after = AFTER.map((r, d) => (JSON.stringify(r) === JSON.stringify(BEFORE[d]) ? null : mkRoute(pathD(pts(r), HOME[d]), COL[d])));
+
+  const nodesG = $("r-nodes");
+  const homes = HOME.map(p => mk("rect", { x: p[0] - 9, y: p[1] - 9, width: 18, height: 18, rx: 4, fill: "#3A3D44" }, nodesG));
+  const hh = H.map(h => {
+    const g = mk("g", {}, nodesG);
+    const dots = Array.from({ length: h.n }, (_, k) => mk("circle", { cx: h.p[0] + (k - (h.n - 1) / 2) * 13, cy: h.p[1], r: 6, fill: "#6E737C" }, g));
+    const ring = mk("circle", { cx: h.p[0], cy: h.p[1], r: 10 + h.n * 6, fill: "none", stroke: "#fff", "stroke-opacity": 0, "stroke-width": 2 }, g);
+    return { g, dots, ring };
+  });
+  const carsG = $("r-cars");
+  const cars = HOME.map((_, d) => mk("circle", { r: 7, fill: COL[d], stroke: "#0E1013", "stroke-width": 3, opacity: 0 }, carsG));
+
+  const mix = (a, b, p) => {
+    const pa = a.match(/\w\w/g).map(h => parseInt(h, 16)), pb = b.match(/\w\w/g).map(h => parseInt(h, 16));
+    return "#" + pa.map((v, i) => Math.round(v + (pb[i] - v) * p).toString(16).padStart(2, "0")).join("");
+  };
+  // sweep start bearing (pointing west-ish) and order of capture
+  const START = Math.PI * 0.95;
+  const swept = (a, s) => { let r = a - START; while (r < 0) r += Math.PI * 2; return r <= s; };
+
+  const render = T => {
+    const t = T % PERIOD;
+    const fade = t > PERIOD - 0.8 ? (PERIOD - t) / 0.8 : 1;
+    // 0–1.2 nodes appear
+    hh.forEach((h, i) => h.g.setAttribute("opacity", ease(clamp((t - 0.1 - i * 0.08) / 0.4)) * fade));
+    homes.forEach((h, i) => h.setAttribute("opacity", ease(clamp((t - 0.6 - i * 0.08) / 0.4)) * fade));
+    // 1.4–3.4 bearing sweep
+    const s = clamp((t - 1.4) / 2) * Math.PI * 2;
+    const sweepOn = t > 1.3 && t < 3.6;
+    $("r-sweep").setAttribute("opacity", sweepOn ? Math.min(1, (t - 1.3) / 0.2, (3.6 - t) / 0.2) : 0);
+    const R = 700, a0 = START, a1 = START + s;
+    $("r-arm").setAttribute("x1", V[0]); $("r-arm").setAttribute("y1", V[1]);
+    $("r-arm").setAttribute("x2", V[0] + R * Math.cos(a1)); $("r-arm").setAttribute("y2", V[1] + R * Math.sin(a1));
+    const w0 = Math.max(a0, a1 - 0.6);
+    $("r-wedge").setAttribute("d", `M${V[0]} ${V[1]}L${V[0] + R * Math.cos(w0)} ${V[1] + R * Math.sin(w0)}A${R} ${R} 0 0 1 ${V[0] + R * Math.cos(a1)} ${V[1] + R * Math.sin(a1)}Z`);
+    // household colors: assigned when swept; local search recolors household 3 at 7.0–7.6
+    const moveP = ease(clamp((t - 7.0) / 0.6));
+    H.forEach((h, i) => {
+      const on = t > 3.6 || (t > 1.4 && swept(ang(h.p), s));
+      let c = on ? COL[h.d] : "#6E737C";
+      if (h.after !== undefined && t > 7.0) c = mix(COL[h.d], COL[h.after], moveP);
+      hh[i].dots.forEach(dt => dt.setAttribute("fill", c));
+      const pulse = h.after !== undefined ? clamp(1 - Math.abs(t - 7.3) / 0.8) : 0;
+      hh[i].ring.setAttribute("stroke-opacity", pulse * 0.6);
+      hh[i].ring.setAttribute("r", 16 + h.n * 6 + (1 - pulse) * 10);
+    });
+    homes.forEach((h, d) => h.setAttribute("fill", t > 3.6 ? COL[d] : "#3A3D44"));
+    // 3.8–5.8 routes draw; 7.0 replaced routes swap
+    before.forEach((r, d) => {
+      const p = ease(clamp((t - 3.8 - d * 0.3) / 1.4));
+      r.setAttribute("stroke-dashoffset", 1 - p);
+      const replaced = after[d] !== null;
+      r.setAttribute("opacity", (replaced ? 1 - ease(clamp((t - 7.0) / 0.5)) : 1) * fade * 0.9);
+    });
+    after.forEach((r, d) => {
+      if (!r) return;
+      const p = ease(clamp((t - 7.2) / 0.8));
+      r.setAttribute("stroke-dashoffset", 1 - p);
+      r.setAttribute("opacity", fade * 0.9);
+    });
+    // 8.4–14 cars drive their routes home
+    cars.forEach((c, d) => {
+      const route = after[d] || before[d];
+      const p = clamp((t - 8.4 - d * 0.25) / 4.6);
+      if (p <= 0 || p >= 1) { c.setAttribute("opacity", 0); return; }
+      const L = route.getTotalLength(), pt = route.getPointAtLength(ease(p) * L);
+      c.setAttribute("cx", pt.x); c.setAttribute("cy", pt.y);
+      c.setAttribute("opacity", Math.min(1, p * 8, (1 - p) * 8) * fade);
+    });
+    // panel + phase captions
+    const phase = t < 1.4 ? "load riders and households" : t < 3.6 ? "seed: bearing sweep from the venue" : t < 6.6 ? "route: order stops, respect seats" : t < 8.2 ? "local search: move household to cut detour" : "4 routes ready";
+    $("r-phase").textContent = "› " + phase;
+    $("r-phase").setAttribute("opacity", fade);
+    const done = t > 3.8;
+    $("r-title").textContent = done ? "4 routes · Dropoff" : t > 1.4 ? "Calculating routes…" : "Plan an event";
+    $("r-stat").textContent = t > 7.2 ? "longest detour  4m 36s" : t > 5.2 ? "longest detour  7m 12s" : "";
+    $("r-stat").style.fill = t > 7.2 && t < 9 ? "#34B37E" : "#8A8F98";
+    $("r-panel").setAttribute("opacity", fade);
+    $("r-venue").setAttribute("opacity", fade);
+  };
+  play(document.querySelector(".rhr"), render, 11);
+})();
     </script>
   </body>
 </html>
