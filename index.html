@@ -182,8 +182,9 @@
       }
       .hero-grid {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: clamp(2rem, 5vw, 4rem);
+        grid-template-columns: minmax(0, 34rem) 280px;
+        justify-content: start;
+        gap: clamp(2rem, 6vw, 6rem);
         align-items: center;
       }
       .hero-copy {
@@ -525,11 +526,14 @@
               <p class="lede" data-reveal style="--delay: 0.08s">
                 <span class="role">Applied AI Engineer</span> building production LLM agent
                 systems in Go. I lead the team that owns agent context, including memory
-                systems, semantic layers, context management, vector search, and web search,
-                along with the evaluations for those systems. Software engineer at the core.
-                I came up building production backends and full-stack applications in Go,
-                Python, and TypeScript, and that foundation shapes how I approach agents: as
-                real systems that have to hold up in production.
+                systems, semantic layers, context management, vector search, web search, and
+                file upload, along with the evaluations for those systems.
+              </p>
+              <p class="lede" data-reveal style="--delay: 0.12s">
+                Software engineer at the core. I came up building production backends and
+                full-stack applications in Go, Python, and TypeScript, and that foundation
+                shapes how I approach agents: as real systems that have to hold up in
+                production.
               </p>
             </div>
             <figure class="portrait" data-reveal style="--delay: 0.2s">
