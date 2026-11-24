@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>Aryan Binazir</title>
+    <script>document.documentElement.classList.add("js");</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="images/Favicon.ico" />
@@ -370,6 +371,9 @@
         font-size: 0.95rem;
         line-height: 1.65;
       }
+      .project-content .text-link {
+        margin-top: 0.9rem;
+      }
       .project-content i {
         font-style: normal;
         font-weight: 600;
@@ -413,13 +417,13 @@
       }
 
       /* ═════════════════ SCROLL REVEAL ═════════════════ */
-      [data-reveal] {
+      .js [data-reveal] {
         opacity: 0;
         transform: translateY(16px);
         transition: opacity 0.9s ease, transform 0.9s ease;
         transition-delay: var(--delay, 0s);
       }
-      [data-reveal].is-visible {
+      .js [data-reveal].is-visible {
         opacity: 1;
         transform: translateY(0);
       }
@@ -456,7 +460,7 @@
 
       @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
-        [data-reveal] { opacity: 1; transform: none; transition: none; }
+        .js [data-reveal] { opacity: 1; transform: none; transition: none; }
       }
     
       /* ── Night Study details ── */
@@ -617,40 +621,50 @@
             </header>
             <div class="projects-list">
               <article class="project-item" data-reveal style="--delay: 0.05s">
-                <img class="project-img" src="images/ride-home-router.png" alt="Ride Home Router" loading="lazy" />
+                <img class="project-img" src="images/pi-extensions.jpg" alt="Pi extensions: subagents, guardian, hooks, regen, escape-continue and footer enabled" loading="lazy" />
                 <div class="project-content">
-                  <h3>Ride Home Router</h3>
+                  <h3>Pi Extensions</h3>
                   <p>
-                  Tackles real-world vehicle routing: a multi-phase algorithm
-                  assigns passengers, optimizes stop order, and balances
-                  workloads across drivers. One-click Google Maps export means
-                  drivers just follow the link. Built with
-                  <i>Go &amp; HTMX</i>, actively used by nonprofit organizations
-                  to coordinate rides.
+                  The extensions I run daily on the Pi coding agent: background
+                  subagents with model profiles and approved workflows, a Guardian
+                  that reviews every command and file change before it runs, tested
+                  hooks that block, advise or gate the agent, and automatic thread
+                  naming. Built in <i>TypeScript</i>.
                   </p>
+                  <a target="_blank" rel="noopener noreferrer"
+                    href="https://github.com/aryan-binazir/pi-extensions"
+                    class="text-link">View on GitHub <span class="arrow">&rarr;</span></a>
                 </div>
               </article>
               <article class="project-item" data-reveal style="--delay: 0.12s">
-                <img class="project-img" src="images/RequestDjinn.jpg" alt="Request-Djinn" loading="lazy" />
+                <img class="project-img" src="images/ride-home-router.jpg" alt="Ride Home Router planning four dropoff routes for 18 riders" loading="lazy" />
                 <div class="project-content">
-                  <h3>Request-Djinn</h3>
+                  <h3>Ride Home Router</h3>
                   <p>
-                  An HTTP webhook inspector created using
-                  <i>Express.js, React.js, Node.js, MongoDB &amp; PostgreSQL</i> and
-                  deployed to a <i>Digital Ocean Droplet</i>.
+                  Plans event pickups and dropoffs: assigns riders to drivers by
+                  capacity, keeps households together, balances routes, and hands
+                  each driver numbered Google Maps legs. A self-hosted <i>Go</i>
+                  server on <i>Postgres</i>, actively used by nonprofit
+                  organizations to coordinate rides.
                   </p>
+                  <a target="_blank" rel="noopener noreferrer"
+                    href="https://github.com/aryan-binazir/ride-home-router"
+                    class="text-link">View on GitHub <span class="arrow">&rarr;</span></a>
                 </div>
               </article>
               <article class="project-item" data-reveal style="--delay: 0.19s">
-                <img class="project-img" src="images/neovim-config.png" alt="Neovim Configuration" loading="lazy" />
+                <img class="project-img" src="images/herdr-triage.jpg" alt="herdr-triage agent picker listing coding-agent threads by status" loading="lazy" />
                 <div class="project-content">
-                  <h3>Neovim Configuration</h3>
+                  <h3>herdr-triage</h3>
                   <p>
-                  Meticulously crafted development environment featuring
-                  <i>Neovim</i> and <i>Tmux</i> that enhances productivity through
-                  custom linting, autocompletion, and keybindings. Designed to
-                  create the perfect flow state for problem-solving.
+                  A triage picker for running many coding agents at once in Herdr.
+                  Settle finished threads, snooze them, mark them unread, or pin
+                  them. Settling a Claude, Pi or Codex thread closes its session,
+                  and reopening it resumes the conversation. Built in <i>Rust</i>.
                   </p>
+                  <a target="_blank" rel="noopener noreferrer"
+                    href="https://github.com/aryan-binazir/herdr-triage"
+                    class="text-link">View on GitHub <span class="arrow">&rarr;</span></a>
                 </div>
               </article>
             </div>
